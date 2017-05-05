@@ -2,11 +2,13 @@ package com.github.aesteve.vertx.web.dsl.examples;
 
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 /* FIXME : remove this class and make proper doc / examples */
 public class TodoBackendExample {
@@ -25,7 +27,7 @@ public class TodoBackendExample {
             return Future.succeededFuture(todos.values());
         }
 
-        Future<Todo> todoExists(int id) {
+        AsyncResult<Todo> todoExists(int id) {
             return get(id) == null ?
                     Future.failedFuture("Not found") :
                     Future.succeededFuture(get(id));
@@ -65,6 +67,10 @@ public class TodoBackendExample {
 
     public static void main(String... args) {
         AsyncTodoService todos = new AsyncTodoService();
+        Function<Integer, AsyncResult<Todo>> todoExists = todos::todoExists;
+        Function<String, Integer> idIsAnInt = Integer::parseInt;
+        Function<String, AsyncResult<Todo>> validId = idIsAnInt.andThen(todoExists);
+
         WebRouter router = WebRouter.router(Vertx.vertx());
         router.marshaller("application/json", WebMarshaller.JSON);
         router.delete("/api/todos")
@@ -80,18 +86,16 @@ public class TodoBackendExample {
                 .intParam("id")
                 .sendFuture(rc -> todos.findById(rc.get("id")));
 
-        /*
         router.put("/api/todos/:id")
                 .intParam("id")
-                .checkParam("id", todos::todoExists, 404) // TODO : custom status
+                .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
                 .withBody("todo", Todo.class)
                 .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo"));
 
         router.delete("/api/todos/:id")
                 .intParam("id")
-                .checkParam("id", todos::todoExists, 404)
-                .sendFuture(rc -> todos.delete(rc.get("id"));
-        */
+                .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
+                .sendFuture(rc -> todos.remove(rc.get("id"));
     }
 
     // Other stuff
