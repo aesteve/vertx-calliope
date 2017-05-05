@@ -8,12 +8,16 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
 
 public class PlainMarshallerTest extends TestBase {
 
     private final static String PLAIN_TXT_URL = "/tests/marshallers/plain";
     private final static String PLAIN_TXT_URL_WITH_STATUS = "/tests/marshallers/plain/status";
+    private final static String PLAIN_TXT_URL_NULL = "/tests/marshallers/plain/null";
+    private final static String PLAIN_TXT_URL_OPTIONAL = "/tests/marshallers/plain/optional";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {
@@ -21,9 +25,14 @@ public class PlainMarshallerTest extends TestBase {
         router.marshaller("text/plain", PLAIN)
                 .get(PLAIN_TXT_URL)
                 .send(rc -> "hello !");
-        router.marshaller("text/plain", PLAIN)
-                .get(PLAIN_TXT_URL_WITH_STATUS)
+        router.get(PLAIN_TXT_URL_WITH_STATUS)
                 .send(rc -> "hello !", 418);
+        router.get(PLAIN_TXT_URL_NULL)
+                .send(rc -> null);
+        router.get(PLAIN_TXT_URL_OPTIONAL)
+                .send(rc -> {
+                    return Optional.ofNullable(rc.request().getParam("optional"));
+                });
         return router;
     }
 
@@ -51,4 +60,36 @@ public class PlainMarshallerTest extends TestBase {
             });
         }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
     }
+
+    @Test
+    public void nullPayloadShouldEndUp404(TestContext ctx) {
+        final Async async = ctx.async();
+        client().get(PLAIN_TXT_URL_NULL, resp -> {
+            ctx.assertEquals(404, resp.statusCode());
+            async.complete();
+        }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
+    }
+
+    @Test
+    public void absentOptionalPayloadShouldEndUp404(TestContext ctx) {
+        final Async async = ctx.async();
+        client().get(PLAIN_TXT_URL_OPTIONAL, resp -> {
+            ctx.assertEquals(404, resp.statusCode());
+            async.complete();
+        }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
+    }
+
+
+    @Test
+    public void presentOptionalPayloadShouldBeReturned(TestContext ctx) {
+        final Async async = ctx.async();
+        client().get(PLAIN_TXT_URL_OPTIONAL + "?optional=test", resp -> {
+            ctx.assertEquals(200, resp.statusCode());
+            resp.bodyHandler(buff -> {
+               ctx.assertEquals(buff.toString(), "test");
+                async.complete();
+            });
+        }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
+    }
+
 }

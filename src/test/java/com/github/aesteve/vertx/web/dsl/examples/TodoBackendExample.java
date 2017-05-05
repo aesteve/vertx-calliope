@@ -78,13 +78,15 @@ public class TodoBackendExample {
 
         router.get("/api/todos/:id")
                 .intParam("id")
-                .sendFuture(rc -> todos.findById(rc.get("id"))); // TODO : if we try to marshall a null value, or an empty optional then return 404 automatically
+                .sendFuture(rc -> todos.findById(rc.get("id")));
+
         /*
         router.put("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", todos::todoExists, 404) // TODO : custom status
-                .withBody("todo", Todo.class) // TODO : handle request body
-                .sendFuture(rc -> todos.update(rc.get("todo"));
+                .withBody("todo", Todo.class)
+                .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo"));
+
         router.delete("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", todos::todoExists, 404)

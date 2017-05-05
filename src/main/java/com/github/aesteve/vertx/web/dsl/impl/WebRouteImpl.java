@@ -71,7 +71,7 @@ public class WebRouteImpl implements WebRoute {
         handler(rc -> {
             withMarshaller(rc, m -> {
                 rc.response().setStatusCode(statusCode);
-                m.toResponseBody(rc, supplier.getPayload(rc));
+                marshall(m, rc, supplier.getPayload(rc));
             });
         });
     }
@@ -86,10 +86,27 @@ public class WebRouteImpl implements WebRoute {
                         return;
                     }
                     rc.response().setStatusCode(statusCode);
-                    m.toResponseBody(rc, res.result());
+                    marshall(m, rc, res.result());
                 });
             });
         });
+    }
+
+    private <T> void marshall(WebMarshaller m, RoutingContext rc, T result) {
+        if (result == null) {
+            rc.response().setStatusCode(404).end();
+            return;
+        }
+        if (result instanceof Optional) {
+            final Optional res = (Optional)result;
+            if (res.isPresent()) {
+                m.toResponseBody(rc, res.get());
+            } else {
+                rc.response().setStatusCode(404).end();
+            }
+        } else {
+            m.toResponseBody(rc, result);
+        }
     }
 
     // Attach every handler to the routes
