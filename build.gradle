@@ -7,9 +7,8 @@ apply plugin: 'idea'
 sourceCompatibility = 1.8
 
 repositories {
-    maven {
-        url 'http://nexus.osiris.withoxylane.com/content/groups/ManagedRepositories/'
-    }
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
