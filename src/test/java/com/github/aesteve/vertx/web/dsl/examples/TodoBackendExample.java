@@ -73,6 +73,7 @@ public class TodoBackendExample {
 
         WebRouter router = WebRouter.router(Vertx.vertx());
         router.marshaller("application/json", WebMarshaller.JSON);
+
         router.delete("/api/todos")
                 .sendFuture(rc -> todos.clear());
         router.get("/api/todos")
@@ -90,12 +91,12 @@ public class TodoBackendExample {
                 .intParam("id")
                 .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
                 .withBody("todo", Todo.class)
-                .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo"));
+                .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo")));
 
         router.delete("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
-                .sendFuture(rc -> todos.remove(rc.get("id"));
+                .sendFuture(rc -> todos.remove(rc.get("id")));
     }
 
     // Other stuff
