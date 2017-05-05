@@ -8,16 +8,16 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.plain;
+import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
 
-public class MarshallersTest extends TestBase {
+public class PlainMarshallerTest extends TestBase {
 
     private final static String PLAIN_TXT_URL = "/tests/marshallers/plain";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
-        router.marshaller("text/plain", plain())
+        router.marshaller("text/plain", PLAIN)
                 .get(PLAIN_TXT_URL)
                 .send(rc -> "hello !");
         return router;

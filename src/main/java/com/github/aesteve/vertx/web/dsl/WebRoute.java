@@ -28,7 +28,7 @@ public interface WebRoute {
         return handler(rc -> {
             final AsyncResult<T> checked = checker.apply(getParam.apply(rc.request(), paramName));
             if (checked.failed()) {
-                rc.response().setStatusCode(statusIfFailed).end(errorMessage);
+                rc.response().setStatusCode(statusIfFailed).end(errorMessage); // FIXME : doesn't use the right marshaller if set...
                 return;
             }
             rc.put(ctxName, checked.result());
@@ -49,6 +49,10 @@ public interface WebRoute {
     default <T> WebRoute checkParam(String name, Function<String, AsyncResult<T>> checker) {
         return check(name, name, HttpServerRequest::getParam, checker, 400, "Invalid parameter " + name);
     }
+    default <T> WebRoute checkParam(String name, Function<String, AsyncResult<T>> checker, int status, String statusReason) {
+        return check(name, name, HttpServerRequest::getParam, checker, status, statusReason);
+    }
+
     default WebRoute intParam(String name) {
         return checkParam(name, async(Integer::parseInt));
     }

@@ -11,6 +11,6 @@ public interface WebMarshaller {
     <T> void toResponseBody(RoutingContext context, T payload);
 
 
-    static WebMarshaller plain() { return new PlainWebMarshaller(); }
-    static WebMarshaller json() { return new JacksonWebMarshaller(); }
+    WebMarshaller PLAIN = new PlainWebMarshaller();
+    WebMarshaller JSON = new JacksonWebMarshaller();
 }
