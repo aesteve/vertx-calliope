@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.github.aesteve.vertx.web.dsl.marshallers.html">com.github.aesteve.vertx.web.dsl.marshallers</a> &gt; MarshallersTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">1</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.643s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox failures" id="successRate">
+<div class="percent">0%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Failed tests</a>
+</li>
+<li>
+<a href="#tab1">Tests</a>
+</li>
+<li>
+<a href="#tab2">Standard error</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Failed tests</h2>
+<div class="test">
+<a name="plainTextShouldBeReturned"></a>
+<h3 class="failures">plainTextShouldBeReturned</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Not equals : 200 != 404
+	at io.vertx.ext.unit.impl.TestContextImpl.reportAssertionError(TestContextImpl.java:432)
+	at io.vertx.ext.unit.impl.TestContextImpl.assertEquals(TestContextImpl.java:338)
+	at io.vertx.ext.unit.impl.TestContextImpl.assertEquals(TestContextImpl.java:325)
+	at com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest.lambda$plainTextShouldBeReturned$2(MarshallersTest.java:33)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.doHandleResponse(HttpClientRequestImpl.java:533)
+	at io.vertx.core.http.impl.HttpClientRequestBase.handleResponse(HttpClientRequestBase.java:150)
+	at io.vertx.core.http.impl.ClientConnection.handleResponse(ClientConnection.java:308)
+	at io.vertx.core.http.impl.ClientHandler.doMessageReceived(ClientHandler.java:70)
+	at io.vertx.core.http.impl.ClientHandler.doMessageReceived(ClientHandler.java:38)
+	at io.vertx.core.http.impl.VertxHttpHandler.lambda$channelRead$0(VertxHttpHandler.java:71)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:335)
+	at io.vertx.core.impl.ContextImpl.executeFromIO(ContextImpl.java:193)
+	at io.vertx.core.http.impl.VertxHttpHandler.channelRead(VertxHttpHandler.java:71)
+	at io.vertx.core.net.impl.VertxHandler.channelRead(VertxHandler.java:122)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:435)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:293)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:280)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:396)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:250)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+</pre>
+</span>
+</div>
+</div>
+<div id="tab1" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="failures">plainTextShouldBeReturned</td>
+<td>0.643s</td>
+<td class="failures">failed</td>
+</tr>
+</table>
+</div>
+<div id="tab2" class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre>mai 05, 2017 5:36:55 PM io.vertx.core.http.impl.HttpClientRequestImpl
+GRAVE: java.lang.AssertionError: Not equals : 200 != 404
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 3.5</a> at 5 mai 2017 17:36:55</p>
+</div>
+</div>
+</body>
+</html>

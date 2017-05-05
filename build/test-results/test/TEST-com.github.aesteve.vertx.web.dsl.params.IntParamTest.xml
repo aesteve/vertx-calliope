@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.github.aesteve.vertx.web.dsl.params.IntParamTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2017-05-05T15:36:55" hostname="FR-C02QXDP9G8WN" time="0.043">
+  <properties/>
+  <testcase name="shouldBe400IfWrongParam" classname="com.github.aesteve.vertx.web.dsl.params.IntParamTest" time="0.019"/>
+  <testcase name="shouldBe400IfNoParam" classname="com.github.aesteve.vertx.web.dsl.params.IntParamTest" time="0.012"/>
+  <testcase name="shouldBe200IfParamSet" classname="com.github.aesteve.vertx.web.dsl.params.IntParamTest" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

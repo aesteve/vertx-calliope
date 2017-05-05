@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2017-05-05T15:36:55" hostname="FR-C02QXDP9G8WN" time="0.643">
+  <properties/>
+  <testcase name="plainTextShouldBeReturned" classname="com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest" time="0.643">
+    <failure message="java.lang.AssertionError: Not equals : 200 != 404" type="java.lang.AssertionError">java.lang.AssertionError: Not equals : 200 != 404
+	at io.vertx.ext.unit.impl.TestContextImpl.reportAssertionError(TestContextImpl.java:432)
+	at io.vertx.ext.unit.impl.TestContextImpl.assertEquals(TestContextImpl.java:338)
+	at io.vertx.ext.unit.impl.TestContextImpl.assertEquals(TestContextImpl.java:325)
+	at com.github.aesteve.vertx.web.dsl.marshallers.MarshallersTest.lambda$plainTextShouldBeReturned$2(MarshallersTest.java:33)
+	at io.vertx.core.http.impl.HttpClientRequestImpl.doHandleResponse(HttpClientRequestImpl.java:533)
+	at io.vertx.core.http.impl.HttpClientRequestBase.handleResponse(HttpClientRequestBase.java:150)
+	at io.vertx.core.http.impl.ClientConnection.handleResponse(ClientConnection.java:308)
+	at io.vertx.core.http.impl.ClientHandler.doMessageReceived(ClientHandler.java:70)
+	at io.vertx.core.http.impl.ClientHandler.doMessageReceived(ClientHandler.java:38)
+	at io.vertx.core.http.impl.VertxHttpHandler.lambda$channelRead$0(VertxHttpHandler.java:71)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:335)
+	at io.vertx.core.impl.ContextImpl.executeFromIO(ContextImpl.java:193)
+	at io.vertx.core.http.impl.VertxHttpHandler.channelRead(VertxHttpHandler.java:71)
+	at io.vertx.core.net.impl.VertxHandler.channelRead(VertxHandler.java:122)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:435)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:293)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:280)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:396)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:248)
+	at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:250)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1334)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:926)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:129)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:642)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:565)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:479)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:441)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:745)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[mai 05, 2017 5:36:55 PM io.vertx.core.http.impl.HttpClientRequestImpl
+GRAVE: java.lang.AssertionError: Not equals : 200 != 404
+]]></system-err>
+</testsuite>

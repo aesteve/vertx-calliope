@@ -1,0 +1,19 @@
+group 'com.github.aesteve'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven {
+        url 'http://nexus.osiris.withoxylane.com/content/groups/ManagedRepositories/'
+    }
+}
+
+dependencies {
+    compile "io.vertx:vertx-web:$vertxVersion"
+    testCompile "io.vertx:vertx-unit:$vertxVersion"
+    testCompile "junit:junit:4.12"
+}
