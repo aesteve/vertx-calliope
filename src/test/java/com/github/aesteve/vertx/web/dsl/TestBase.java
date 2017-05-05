@@ -10,11 +10,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
+
 @RunWith(VertxUnitRunner.class)
 public abstract class TestBase {
 
     protected final int PORT = 8888;
     protected final String HOST = "localhost";
+    protected final static Date NOW = new Date();
 
     protected HttpServerOptions options = new HttpServerOptions()
             .setHost(HOST)
@@ -46,4 +49,19 @@ public abstract class TestBase {
     protected HttpClient client() {
         return vertx.createHttpClient(clientOptions);
     }
+
+
+    public final static class MockObject {
+        private String string = "test";
+        private int i = 3;
+        private Date date = NOW;
+
+        public String getString() { return string; }
+        public void setString(String string) { this.string = string; }
+        public Date getDate() { return date; }
+        public void setDate(Date date) { this.date = date; }
+        public int getI() { return i; }
+        public void setI(int i) { this.i = i; }
+    }
+
 }

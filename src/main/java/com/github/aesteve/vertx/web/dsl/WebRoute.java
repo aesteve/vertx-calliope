@@ -20,9 +20,17 @@ public interface WebRoute {
     WebRoute consumes(String mime);
     WebRoute produces(String mime);
     WebRoute handler(Handler<RoutingContext> handler);
+    <T> WebRoute withBody(String name, Class<T> bodyClass);
 
-    <T> void send(PayloadSupplier<T> supplier);
-    <T> void sendFuture(AsyncPayloadSupplier<T> supplier);
+    <T> void send(PayloadSupplier<T> supplier, int statusCode);
+    <T> void sendFuture(AsyncPayloadSupplier<T> supplier, int StatusCode);
+
+    default <T> void send(PayloadSupplier<T> supplier) {
+        send(supplier, 200);
+    }
+    default <T> void sendFuture(AsyncPayloadSupplier<T> supplier) {
+        sendFuture(supplier, 200);
+    }
 
     default <T> WebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker, int statusIfFailed, String errorMessage) {
         return handler(rc -> {

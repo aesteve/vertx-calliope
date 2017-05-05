@@ -63,7 +63,6 @@ public class TodoBackendExample {
 
     }
 
-/*
     public static void main(String... args) {
         AsyncTodoService todos = new AsyncTodoService();
         WebRouter router = WebRouter.router(Vertx.vertx());
@@ -72,12 +71,15 @@ public class TodoBackendExample {
                 .sendFuture(rc -> todos.clear());
         router.get("/api/todos")
                 .sendFuture(rc -> todos.findAll());
+
         router.post("/api/todos")
-                .withBody("todo", Todo.class) // TODO : handle request body
-                .sendFuture(rc -> todos.create(rc.get("todo").map(Response::CREATED)); // TODO : ResponseBuilder with "created"
+                .withBody("todo", Todo.class)
+                .sendFuture(rc -> todos.create(rc.get("todo")), 201);
+
         router.get("/api/todos/:id")
                 .intParam("id")
                 .sendFuture(rc -> todos.findById(rc.get("id"))); // TODO : if we try to marshall a null value, or an empty optional then return 404 automatically
+        /*
         router.put("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", todos::todoExists, 404) // TODO : custom status
@@ -87,10 +89,10 @@ public class TodoBackendExample {
                 .intParam("id")
                 .checkParam("id", todos::todoExists, 404)
                 .sendFuture(rc -> todos.delete(rc.get("id"));
+        */
     }
 
     // Other stuff
     // TODO : String param
     // TODO : non-mandatory params
-*/
 }

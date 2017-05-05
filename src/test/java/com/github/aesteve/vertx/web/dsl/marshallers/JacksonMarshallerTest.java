@@ -11,23 +11,10 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
-import java.util.Date;
-
 public class JacksonMarshallerTest extends TestBase {
 
     private final static String JSON_PATH = "/tests/marshallers/json";
     private final static String ASYNC_JSON_PATH = "/tests/marshallers/json/async";
-    private final static Date NOW = new Date();
-
-    final static class MockObject {
-        final String string = "test";
-        final int i = 3;
-
-        public String getString() { return string; }
-        public Date getDate() { return NOW; }
-        public int getI() { return i; }
-    }
-
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {

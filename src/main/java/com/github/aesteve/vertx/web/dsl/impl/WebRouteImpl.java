@@ -11,6 +11,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -55,16 +56,28 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> void send(PayloadSupplier<T> supplier) {
+    public <T> WebRoute withBody(String name, Class<T> bodyClass) {
+        handler(BodyHandler.create());
+        return handler(rc -> {
+            withMarshaller(rc, m -> {
+                rc.put(name, m.fromRequestBody(rc, bodyClass));
+                rc.next();
+            });
+        });
+    }
+
+    @Override
+    public <T> void send(PayloadSupplier<T> supplier, int statusCode) {
         handler(rc -> {
             withMarshaller(rc, m -> {
+                rc.response().setStatusCode(statusCode);
                 m.toResponseBody(rc, supplier.getPayload(rc));
             });
         });
     }
 
     @Override
-    public <T> void sendFuture(AsyncPayloadSupplier<T> supplier) {
+    public <T> void sendFuture(AsyncPayloadSupplier<T> supplier, int statusCode) {
         handler(rc -> {
             withMarshaller(rc, m -> {
                 supplier.getPayload(rc).setHandler(res -> {
@@ -72,6 +85,7 @@ public class WebRouteImpl implements WebRoute {
                         rc.fail(res.cause());
                         return;
                     }
+                    rc.response().setStatusCode(statusCode);
                     m.toResponseBody(rc, res.result());
                 });
             });
@@ -80,7 +94,11 @@ public class WebRouteImpl implements WebRoute {
 
     // Attach every handler to the routes
     void attachHandlers() {
-        handlers.forEach(h -> routes().forEach(r -> r.handler(h)));
+        handlers.forEach(h -> {
+            routes().forEach(r -> {
+                r.handler(h);
+            });
+        });
     }
 
     // Creates all the routes
