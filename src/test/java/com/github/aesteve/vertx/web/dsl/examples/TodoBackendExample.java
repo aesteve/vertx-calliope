@@ -89,13 +89,13 @@ public class TodoBackendExample {
 
         router.put("/api/todos/:id")
                 .intParam("id")
-                .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
+                .checkParam("id", validId, 404, "Todo not found")
                 .withBody("todo", Todo.class)
                 .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo")));
 
         router.delete("/api/todos/:id")
                 .intParam("id")
-                .checkParam("id", validId, 404, "Todo not found") // TODO : write unit test
+                .checkParam("id", validId, 404, "Todo not found")
                 .sendFuture(rc -> todos.remove(rc.get("id")));
     }
 
