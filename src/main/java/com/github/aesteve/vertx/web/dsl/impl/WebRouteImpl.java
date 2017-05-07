@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.WebRoute;
+import com.github.aesteve.vertx.web.dsl.WebRouteWithBody;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.io.AsyncPayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
@@ -27,6 +28,15 @@ public class WebRouteImpl implements WebRoute {
 
     protected final List<Handler<RoutingContext>> handlers = new ArrayList<>();
 
+
+    WebRouteImpl(WebRouteImpl parent) {
+        this.parent = parent.parent;
+        this.router = parent.router;
+        this.path = parent.path;
+        methods.addAll(parent.methods);
+        consumed.addAll(parent.consumed);
+        produced.addAll(parent.produced);
+    }
 
     WebRouteImpl(WebRouterImpl parent, String path, HttpMethod... methods) {
         this.parent = parent;
@@ -56,14 +66,8 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> WebRoute withBody(String name, Class<T> bodyClass) {
-        handler(BodyHandler.create());
-        return handler(rc -> {
-            withMarshaller(rc, m -> {
-                rc.put(name, m.fromRequestBody(rc, bodyClass));
-                rc.next();
-            });
-        });
+    public <T> WebRouteWithBody<T> withBody(Class<T> bodyClass) {
+        return new WebRouteWithBodyImpl<>(this, bodyClass);
     }
 
     @Override
@@ -135,7 +139,7 @@ public class WebRouteImpl implements WebRoute {
         return routes;
     }
 
-    private void withMarshaller(RoutingContext rc, Handler<WebMarshaller> handler) {
+    void withMarshaller(RoutingContext rc, Handler<WebMarshaller> handler) {
         final WebMarshaller m = parent.getMarshaller(rc);
         if (m == null) {
             rc.fail(new VertxException("No marshaller found for " + rc.getAcceptableContentType()));

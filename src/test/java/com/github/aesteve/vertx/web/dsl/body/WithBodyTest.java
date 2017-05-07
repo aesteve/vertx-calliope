@@ -11,6 +11,8 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
+import java.util.function.Function;
+
 public class WithBodyTest extends TestBase {
 
     private final static String WITH_BODY_URL = "/tests/body";
@@ -20,8 +22,8 @@ public class WithBodyTest extends TestBase {
         final WebRouter router = WebRouter.router(Vertx.vertx());
         router.marshaller("application/json", WebMarshaller.JSON);
         router.post(WITH_BODY_URL)
-                .withBody("mock", MockObject.class)
-                .send(rc -> rc.get("mock"));
+                .withBody(MockObject.class)
+                .send(Function.identity());
         return router;
     }
 

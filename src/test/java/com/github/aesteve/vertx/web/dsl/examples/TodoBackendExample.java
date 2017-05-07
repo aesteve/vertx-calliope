@@ -80,8 +80,8 @@ public class TodoBackendExample {
                 .sendFuture(rc -> todos.findAll());
 
         router.post("/api/todos")
-                .withBody("todo", Todo.class)
-                .sendFuture(rc -> todos.create(rc.get("todo")), 201);
+                .withBody(Todo.class)
+                .sendFuture(todos::create, 201);
 
         router.get("/api/todos/:id")
                 .intParam("id")
@@ -90,8 +90,8 @@ public class TodoBackendExample {
         router.put("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", validId, 404, "Todo not found")
-                .withBody("todo", Todo.class)
-                .sendFuture(rc -> todos.update(rc.get("id"), rc.get("todo")));
+                .withBody(Todo.class)
+                .sendFuture((todo, rc) -> todos.update(rc.get("id"), todo));
 
         router.delete("/api/todos/:id")
                 .intParam("id")

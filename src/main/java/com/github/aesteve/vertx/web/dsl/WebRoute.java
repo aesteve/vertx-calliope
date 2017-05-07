@@ -4,6 +4,7 @@ import com.github.aesteve.vertx.web.dsl.io.AsyncPayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
@@ -15,23 +16,19 @@ import java.util.function.Function;
 
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.*;
 
-public interface WebRoute {
+public interface WebRoute extends ResponseWritable {
 
+    /* Description */
     WebRoute consumes(String mime);
     WebRoute produces(String mime);
+
+    /* Handler stuff, backwards-compatibility */
     WebRoute handler(Handler<RoutingContext> handler);
-    <T> WebRoute withBody(String name, Class<T> bodyClass);
 
-    <T> void send(PayloadSupplier<T> supplier, int statusCode);
-    <T> void sendFuture(AsyncPayloadSupplier<T> supplier, int StatusCode);
+    /* Body */
+    <T> WebRouteWithBody<T> withBody(Class<T> bodyClass);
 
-    default <T> void send(PayloadSupplier<T> supplier) {
-        send(supplier, 200);
-    }
-    default <T> void sendFuture(AsyncPayloadSupplier<T> supplier) {
-        sendFuture(supplier, 200);
-    }
-
+    /* Request checking */
     default <T> WebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker, int statusIfFailed, String errorMessage) {
         return handler(rc -> {
             final AsyncResult<T> checked = checker.apply(getParam.apply(rc.request(), paramName));
@@ -49,7 +46,6 @@ public interface WebRoute {
     default <T> WebRoute check(String paramName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker, int statusIfFailed, String statusReason) {
         return check(paramName, paramName, getParam, checker, statusIfFailed, statusReason);
     }
-
 
     default <T> WebRoute checkHeader(String name, String ctxName, Function<String, AsyncResult<T>> checker) {
         return check(name, ctxName, HttpServerRequest::getHeader, checker, 400, "Invalid parameter " + name);
@@ -78,5 +74,8 @@ public interface WebRoute {
         return checkParam(name, parsing);
     }
 
+
+    /* Dealing with request */
+    // <T> WebRouteWithParams<T> withParams(Function<MultiMap, AsyncResult<T>> extractor);
 
 }
