@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType(JavaCompile) {
+    options.incremental = true
+}
+
 dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
     testCompile "io.vertx:vertx-unit:$vertxVersion"
