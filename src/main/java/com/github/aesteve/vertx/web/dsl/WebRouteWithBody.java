@@ -14,6 +14,8 @@ public interface WebRouteWithBody<T> extends ResponseWritable {
     <R> void send(Function<T, R> handler, int status);
     <R> void sendFuture(Function<T, Future<R>> handler, int status);
 
+    <R> WebRouteWithBody<R> map(Function<T, R> mapper);
+
     default <R> void send(BiFunction<T, RoutingContext, R> handler) {
         send(handler, 200);
     }

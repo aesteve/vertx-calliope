@@ -16,6 +16,7 @@ import java.util.function.Function;
 public class WithBodyTest extends TestBase {
 
     private final static String WITH_BODY_URL = "/tests/body";
+    private final static String WITH_BODY_MAP_URL = "/tests/body/map";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {
@@ -23,6 +24,10 @@ public class WithBodyTest extends TestBase {
         router.marshaller("application/json", WebMarshaller.JSON);
         router.post(WITH_BODY_URL)
                 .withBody(MockObject.class)
+                .send(Function.identity());
+        router.post(WITH_BODY_MAP_URL)
+                .withBody(MockObject.class)
+                .map(MockObject::getDate)
                 .send(Function.identity());
         return router;
     }
@@ -40,4 +45,18 @@ public class WithBodyTest extends TestBase {
         }).putHeader(HttpHeaders.ACCEPT, "*/*").end(sent);
     }
 
+    @Test
+    public void bodyShouldBeMapped(TestContext ctx) throws Exception {
+        final Async async = ctx.async();
+        final MockObject mock = new MockObject();
+        final String expected = Json.mapper.writeValueAsString(mock.getDate());
+        final String sent = Json.mapper.writeValueAsString(mock);
+        client().post(WITH_BODY_MAP_URL, resp -> {
+            ctx.assertEquals(200, resp.statusCode());
+            resp.bodyHandler(buff -> {
+                ctx.assertEquals(expected, buff.toString());
+                async.complete();
+            });
+        }).putHeader(HttpHeaders.ACCEPT, "*/*").end(sent);
+    }
 }

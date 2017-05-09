@@ -45,6 +45,16 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
         parent.sendFuture(rc -> handler.apply(body(rc)), status);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <R> WebRouteWithBody<R> map(Function<T, R> mapper) {
+        parent.handler(rc -> {
+            rc.put(BODY_ID, mapper.apply(rc.get(BODY_ID)));
+            rc.next();
+        });
+        return (WebRouteWithBody<R>)this;
+    }
+
     private T body(RoutingContext rc) {
         return rc.get(BODY_ID);
     }
