@@ -3,15 +3,18 @@ package com.github.aesteve.vertx.web.dsl.impl;
 import com.github.aesteve.vertx.web.dsl.WebRoute;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.github.aesteve.vertx.web.dsl.utils.CollectionUtils.firstValue;
 import static io.vertx.core.http.HttpMethod.*;
@@ -22,6 +25,8 @@ public class WebRouterImpl implements WebRouter {
     private final Map<String, WebMarshaller> marshallers = new LinkedHashMap<>();
     final Vertx vertx;
     final Router router;
+    boolean displayErrorDetails;
+    Handler<RoutingContext> errorHandler;
 
     public WebRouterImpl(Vertx vertx) {
         this.vertx = vertx;
@@ -42,7 +47,24 @@ public class WebRouterImpl implements WebRouter {
     }
 
     @Override
-    public WebMarshaller getMarshaller(RoutingContext context) {
+    public WebRouter withErrorDetails(boolean displayErrorDetails) {
+        this.displayErrorDetails = displayErrorDetails;
+        return this;
+    }
+
+    @Override
+    public WebRouter errorHandler(Handler<RoutingContext> errorHandler) {
+        this.errorHandler = errorHandler;
+        return this;
+    }
+
+    @Override
+    public Handler<RoutingContext> errorHandler() {
+        return errorHandler != null ? errorHandler : ErrorHandler.create(displayErrorDetails);
+    }
+
+    @Override
+    public WebMarshaller marshaller(RoutingContext context) {
         final String mime = context.getAcceptableContentType();
         if (mime != null) {
             return marshallers.get(context.getAcceptableContentType());

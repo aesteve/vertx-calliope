@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.web.dsl;
 
 import com.github.aesteve.vertx.web.dsl.io.AsyncPayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
+import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -16,11 +17,22 @@ import java.util.function.Function;
 
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.*;
 
-public interface WebRoute extends ResponseWritable {
+public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
 
     /* Description */
     WebRoute consumes(String mime);
+    default WebRoute consumes(String mime, WebMarshaller marshaller) {
+        consumes(mime);
+        return marshaller(mime, marshaller);
+   }
     WebRoute produces(String mime);
+    default WebRoute produces(String mime, WebMarshaller marshaller) {
+        produces(mime);
+        return marshaller(mime, marshaller);
+    }
+
+    /* Marshalling-stuff */
+    WebRoute marshaller(String mime, WebMarshaller marshaller);
 
     /* Handler stuff, backwards-compatibility */
     WebRoute handler(Handler<RoutingContext> handler);
@@ -73,6 +85,7 @@ public interface WebRoute extends ResponseWritable {
         };
         return checkParam(name, parsing);
     }
+
 
 
     /* Dealing with request */

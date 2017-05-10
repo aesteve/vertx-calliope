@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class ProducesTest extends TestBase {
 
-    private final static String PLAIN_TXT_URL = "/tests/consumes/text";
+    private final static String PLAIN_TXT_URL = "/tests/produces/text";
 
 
     @Override

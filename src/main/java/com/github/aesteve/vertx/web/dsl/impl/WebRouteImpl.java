@@ -12,7 +12,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.ErrorHandler;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -25,6 +25,7 @@ public class WebRouteImpl implements WebRoute {
     private final Set<HttpMethod> methods = new HashSet<>();
     private final List<String> consumed = new ArrayList<>();
     private final List<String> produced = new ArrayList<>();
+    private Handler<RoutingContext> errorHandler;
 
     protected final List<Handler<RoutingContext>> handlers = new ArrayList<>();
 
@@ -56,6 +57,12 @@ public class WebRouteImpl implements WebRoute {
     @Override
     public WebRoute produces(String mime) {
         produced.add(mime);
+        return this;
+    }
+
+    @Override
+    public WebRoute marshaller(String mime, WebMarshaller marshaller) {
+        parent.marshaller(mime, marshaller);
         return this;
     }
 
@@ -117,10 +124,12 @@ public class WebRouteImpl implements WebRoute {
     void attachHandlers() {
         handlers.forEach(h -> {
             routes().forEach(r -> {
+                r.failureHandler(errorHandler());
                 r.handler(h);
             });
         });
     }
+
 
     // Creates all the routes
     private Stream<Route> routes() {
@@ -140,11 +149,28 @@ public class WebRouteImpl implements WebRoute {
     }
 
     void withMarshaller(RoutingContext rc, Handler<WebMarshaller> handler) {
-        final WebMarshaller m = parent.getMarshaller(rc);
+        final WebMarshaller m = parent.marshaller(rc);
         if (m == null) {
             rc.fail(new VertxException("No marshaller found for " + rc.getAcceptableContentType()));
             return;
         }
         handler.handle(m);
+    }
+
+    @Override
+    public WebRoute withErrorDetails(boolean details) {
+        errorHandler = ErrorHandler.create(details);
+        return this;
+    }
+
+    @Override
+    public WebRoute errorHandler(Handler<RoutingContext> errorHandler) {
+        this.errorHandler = errorHandler;
+        return this;
+    }
+
+    @Override
+    public Handler<RoutingContext> errorHandler() {
+        return errorHandler == null ? parent.errorHandler() : errorHandler;
     }
 }

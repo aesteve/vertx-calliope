@@ -8,11 +8,11 @@ import java.util.function.Function;
 
 public interface AsyncUtils {
 
-    static <T> AsyncResult<T> fail(Throwable t) {
+    static <T> Future<T> fail(Throwable t) {
         return Future.failedFuture(t);
     }
 
-    static <T> AsyncResult<T> yield(T value) {
+    static <T> Future<T> yield(T value) {
         return Future.succeededFuture(value);
     }
 

@@ -3,6 +3,7 @@ package com.github.aesteve.vertx.web.dsl.marshallers;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
+import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
 
 public class PlainMarshallerTest extends TestBase {
 
@@ -18,6 +20,7 @@ public class PlainMarshallerTest extends TestBase {
     private final static String PLAIN_TXT_URL_WITH_STATUS = "/tests/marshallers/plain/status";
     private final static String PLAIN_TXT_URL_NULL = "/tests/marshallers/plain/null";
     private final static String PLAIN_TXT_URL_OPTIONAL = "/tests/marshallers/plain/optional";
+    private final static String PLAIN_TXT_URL_FAILED = "/tests/marshallers/plain/async/failed";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {
@@ -30,9 +33,12 @@ public class PlainMarshallerTest extends TestBase {
         router.get(PLAIN_TXT_URL_NULL)
                 .send(rc -> null);
         router.get(PLAIN_TXT_URL_OPTIONAL)
-                .send(rc -> {
-                    return Optional.ofNullable(rc.request().getParam("optional"));
-                });
+                .send(rc ->
+                        Optional.ofNullable(rc.request().getParam("optional"))
+                );
+        router.get(PLAIN_TXT_URL_FAILED)
+                .withErrorDetails(true)
+                .sendFuture(rc -> fail(new VertxException("Sorry")));
         return router;
     }
 
@@ -92,4 +98,15 @@ public class PlainMarshallerTest extends TestBase {
         }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
     }
 
+    @Test
+    public void futureFailureShouldBeReturned(TestContext ctx) {
+        final Async async = ctx.async();
+        client().get(PLAIN_TXT_URL_FAILED, resp -> {
+            ctx.assertEquals(500, resp.statusCode());
+            resp.bodyHandler(buff -> {
+                ctx.assertTrue(buff.toString().contains("Sorry"));
+                async.complete();
+            });
+        }).putHeader(HttpHeaders.ACCEPT, "*/*").end();
+    }
 }
