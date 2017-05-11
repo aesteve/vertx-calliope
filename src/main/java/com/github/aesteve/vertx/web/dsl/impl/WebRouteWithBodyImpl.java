@@ -37,12 +37,12 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
 
     @Override
     public <R> void send(Function<T, R> handler, int status) {
-        parent.send(rc -> handler.apply(body(rc)), status);
+        send(handler, 200);
     }
 
     @Override
     public <R> void sendFuture(Function<T, Future<R>> handler, int status) {
-        parent.sendFuture(rc -> handler.apply(body(rc)), status);
+        sendFuture(handler, 200);
     }
 
     @Override
