@@ -11,7 +11,7 @@ import java.util.function.Function;
 public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWithBody<T> {
 
     private final static String BODY_ID = "$$vertx-request-body";
-    private WebRouteImpl parent;
+    protected WebRouteImpl parent;
 
     public WebRouteWithBodyImpl(WebRouteImpl parent, Class<T> bodyClass) {
         super(parent);
@@ -26,36 +26,21 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
     }
 
     @Override
-    public <R> void send(BiFunction<T, RoutingContext, R> handler, int status) {
-        parent.send(rc -> handler.apply(body(rc), rc), status);
-    }
-
-    @Override
-    public <R> void sendFuture(BiFunction<T, RoutingContext, Future<R>> handler, int status) {
-        parent.sendFuture(rc -> handler.apply(body(rc), rc), status);
-    }
-
-    @Override
-    public <R> void send(Function<T, R> handler, int status) {
-        send(handler, 200);
-    }
-
-    @Override
-    public <R> void sendFuture(Function<T, Future<R>> handler, int status) {
-        sendFuture(handler, 200);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public <R> WebRouteWithBody<R> map(Function<T, R> mapper) {
+    public <R> WebRouteWithBody<R> map(BiFunction<T, RoutingContext, R> mapper) {
         parent.handler(rc -> {
-            rc.put(BODY_ID, mapper.apply(rc.get(BODY_ID)));
+            rc.put(BODY_ID, mapper.apply(body(rc), rc));
             rc.next();
         });
         return (WebRouteWithBody<R>)this;
     }
 
-    private T body(RoutingContext rc) {
+    @Override
+    public void send(int status) {
+        parent.send(this::body, status);
+    }
+
+    protected T body(RoutingContext rc) {
         return rc.get(BODY_ID);
     }
 }

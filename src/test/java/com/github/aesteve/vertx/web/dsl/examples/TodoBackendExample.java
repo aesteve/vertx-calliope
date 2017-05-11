@@ -81,7 +81,8 @@ public class TodoBackendExample {
 
         router.post("/api/todos")
                 .withBody(Todo.class)
-                .sendFuture(todos::create, 201);
+                .map(todos::create)
+                .send(201);
 
         router.get("/api/todos/:id")
                 .intParam("id")
@@ -91,7 +92,8 @@ public class TodoBackendExample {
                 .intParam("id")
                 .checkParam("id", validId, 404, "Todo not found")
                 .withBody(Todo.class)
-                .sendFuture((todo, rc) -> todos.update(rc.get("id"), todo));
+                .map((todo, rc) -> todos.update(rc.get("id"), todo))
+                .send(); // FIXME : will not work, we need "sendFuture" here
 
         router.delete("/api/todos/:id")
                 .intParam("id")

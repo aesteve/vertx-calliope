@@ -10,8 +10,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
-import java.util.function.Function;
-
 public class WithBodyTest extends TestBase {
 
     private final static String WITH_BODY_URL = "/tests/body";
@@ -25,11 +23,11 @@ public class WithBodyTest extends TestBase {
         router.marshaller("application/json", WebMarshaller.JSON);
         router.post(WITH_BODY_URL)
                 .withBody(MockObject.class)
-                .send(Function.identity());
+                .send();
         router.post(WITH_BODY_MAP_URL)
                 .withBody(MockObject.class)
                 .map(MockObject::getDate)
-                .send(Function.identity());
+                .send();
         router.post(WITH_BODY_MAP_SEND_URL)
                 .withBody(MockObject.class)
                 .map(MockObject::getDate)

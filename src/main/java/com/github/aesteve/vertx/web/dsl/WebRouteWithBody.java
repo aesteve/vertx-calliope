@@ -1,6 +1,5 @@
 package com.github.aesteve.vertx.web.dsl;
 
-import io.vertx.core.Future;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.function.BiFunction;
@@ -8,34 +7,14 @@ import java.util.function.Function;
 
 public interface WebRouteWithBody<T> extends ResponseWritable {
 
-    <R> void send(BiFunction<T, RoutingContext, R> handler, int status);
-    <R> void sendFuture(BiFunction<T, RoutingContext, Future<R>> handler, int status);
-
-    <R> void send(Function<T, R> handler, int status);
-    <R> void sendFuture(Function<T, Future<R>> handler, int status);
-
-    <R> WebRouteWithBody<R> map(Function<T, R> mapper);
-
-    default void send(int status) {
-        send(Function.identity(), status);
+    <R> WebRouteWithBody<R> map(BiFunction<T, RoutingContext, R> mapper);
+    default <R> WebRouteWithBody<R> map(Function<T, R> mapper) {
+        return map((body, rc) -> mapper.apply(body));
     }
 
+    void send(int status);
     default void send() {
         send(200);
-    }
-
-    default <R> void send(BiFunction<T, RoutingContext, R> handler) {
-        send(handler, 200);
-    }
-    default <R> void sendFuture(BiFunction<T, RoutingContext, Future<R>> handler) {
-        sendFuture(handler, 200);
-    }
-
-    default <R> void send(Function<T, R> handler) {
-        send(handler, 200);
-    }
-    default <R> void sendFuture(Function<T, Future<R>> handler) {
-        sendFuture(handler, 200);
     }
 
 }
