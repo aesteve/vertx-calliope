@@ -51,7 +51,7 @@ public abstract class TestBase {
     }
 
 
-    public final static class MockObject {
+    public static class MockObject {
         private String string = "test";
         private int i = 3;
         private Date date = NOW;
