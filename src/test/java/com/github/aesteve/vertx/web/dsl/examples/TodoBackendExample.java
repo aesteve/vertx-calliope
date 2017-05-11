@@ -95,7 +95,7 @@ public class TodoBackendExample {
                 .checkParam("id", validId, 404, "Todo not found")
                 .withBody(Todo.class)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
-                .send(); // FIXME : will not work, we need "sendFuture" here
+                .send();
 
         router.delete("/api/todos/:id")
                 .intParam("id")
