@@ -75,7 +75,9 @@ public class TodoBackendExample {
         router.marshaller("application/json", BodyConverter.JSON);
 
         router.delete("/api/todos")
-                .send(rc -> todos.clear());
+                .action(rc -> todos.clear())
+                .send(204);
+
         router.get("/api/todos")
                 .send(rc -> todos.findAll());
 
