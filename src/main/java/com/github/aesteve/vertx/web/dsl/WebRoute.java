@@ -55,6 +55,7 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
     default <T> WebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker) {
         return check(paramName, paramName, getParam, checker, 400, "Invalid ");
     }
+
     default <T> WebRoute check(String paramName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker, int statusIfFailed, String statusReason) {
         return check(paramName, paramName, getParam, checker, statusIfFailed, statusReason);
     }
@@ -79,8 +80,8 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
         Function<String, AsyncResult<Date>> parsing = d -> {
             try {
                 return yield(new SimpleDateFormat(format).parse(d));
-            } catch (ParseException pe) {
-                return fail(pe);
+            } catch (Exception e) {
+                return fail(e);
             }
         };
         return checkParam(name, parsing);

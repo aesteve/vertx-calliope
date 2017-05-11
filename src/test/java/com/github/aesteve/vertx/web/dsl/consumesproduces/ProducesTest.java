@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.web.dsl.consumesproduces;
 
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
+import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
@@ -17,7 +18,7 @@ public class ProducesTest extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
         router.get(PLAIN_TXT_URL)
-            .produces("text/plain")
+            .produces("text/plain", WebMarshaller.PLAIN)
             .handler(rc -> {
                 final String mime = rc.getAcceptableContentType();
                 rc.response().end(mime == null ? "null" : mime);
