@@ -12,6 +12,7 @@ Mostly :
 
 ## TODO : 
 
+- add the ability to register marshaller / unmarshaller & not only a full converter
 - params / headers marshalling in an single object `intParam`, `dateParam` becoming a simple corner case
 - `map` with body / params / headers at the same time i.e. 
 ```
