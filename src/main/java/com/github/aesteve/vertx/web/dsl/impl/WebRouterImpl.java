@@ -40,7 +40,7 @@ public class WebRouterImpl implements WebRouter {
 
     /* Global */
     @Override
-    public WebRouter marshaller(String mime, BodyConverter marshaller) {
+    public WebRouter converter(String mime, BodyConverter marshaller) {
         marshallers.put(mime, marshaller);
         return this;
     }
@@ -63,7 +63,7 @@ public class WebRouterImpl implements WebRouter {
     }
 
     @Override
-    public BodyConverter marshaller(RoutingContext context) {
+    public BodyConverter converter(RoutingContext context) {
         final String mime = context.getAcceptableContentType();
         if (mime != null) {
             return marshallers.get(context.getAcceptableContentType());

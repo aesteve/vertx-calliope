@@ -25,7 +25,7 @@ public class PlainMarshallerTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
-        router.marshaller("text/plain", PLAIN)
+        router.converter("text/plain", PLAIN)
                 .get(PLAIN_TXT_URL)
                 .send(rc -> "hello !");
         router.get(PLAIN_TXT_URL_WITH_STATUS)

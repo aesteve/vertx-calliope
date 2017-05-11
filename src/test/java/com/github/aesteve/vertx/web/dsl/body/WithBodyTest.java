@@ -20,7 +20,7 @@ public class WithBodyTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(Vertx.vertx());
-        router.marshaller("application/json", BodyConverter.JSON);
+        router.converter("application/json", BodyConverter.JSON);
         router.post(WITH_BODY_URL)
                 .withBody(MockObject.class)
                 .send();

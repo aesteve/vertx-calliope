@@ -43,7 +43,7 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
         return handler(rc -> {
             final AsyncResult<T> checked = checker.apply(getParam.apply(rc.request(), paramName));
             if (checked.failed()) {
-                rc.response().setStatusCode(statusIfFailed).end(errorMessage); // FIXME : doesn't use the right marshaller if set...
+                rc.response().setStatusCode(statusIfFailed).end(errorMessage); // FIXME : doesn't use the right converter if set...
                 return;
             }
             rc.put(ctxName, checked.result());

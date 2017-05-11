@@ -24,7 +24,7 @@ public class CheckingParamTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
-        router.marshaller("text/plain", PLAIN);
+        router.converter("text/plain", PLAIN);
         router.get(CHECK_404_URL)
                 .checkParam("test1", correctParameter, 404, "Param test1 not found")
                 .send(rc -> "ok");

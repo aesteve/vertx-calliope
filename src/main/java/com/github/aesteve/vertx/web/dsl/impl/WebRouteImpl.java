@@ -63,7 +63,7 @@ public class WebRouteImpl implements WebRoute {
 
     @Override
     public WebRoute marshaller(String mime, BodyConverter marshaller) {
-        parent.marshaller(mime, marshaller);
+        parent.converter(mime, marshaller);
         return this;
     }
 
@@ -141,9 +141,9 @@ public class WebRouteImpl implements WebRoute {
     }
 
     void withMarshaller(RoutingContext rc, Handler<BodyConverter> handler) {
-        final BodyConverter m = parent.marshaller(rc);
+        final BodyConverter m = parent.converter(rc);
         if (m == null) {
-            rc.fail(new VertxException("No marshaller found for " + rc.getAcceptableContentType()));
+            rc.fail(new VertxException("No converter found for " + rc.getAcceptableContentType()));
             return;
         }
         handler.handle(m);

@@ -29,7 +29,7 @@ public class NoMarshallerTest extends TestBase {
         client().get(NO_MARSHALLER_URL, resp -> {
             ctx.assertEquals(500, resp.statusCode());
             resp.bodyHandler(buffer -> {
-                ctx.assertTrue(buffer.toString().contains("No marshaller found for text/plain"));
+                ctx.assertTrue(buffer.toString().contains("No converter found for text/plain"));
                 async.complete();
             });
         }).putHeader(ACCEPT, "text/plain").end();

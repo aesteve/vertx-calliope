@@ -20,7 +20,7 @@ public class TestAction extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx)
-                .marshaller("application/json", JSON);
+                .converter("application/json", JSON);
 
         router.get(ACTION_URL)
                 .action(rc -> PAYLOAD)

@@ -72,7 +72,7 @@ public class TodoBackendExample {
         Function<String, AsyncResult<Todo>> validId = idIsAnInt.andThen(todoExists);
 
         WebRouter router = WebRouter.router(Vertx.vertx());
-        router.marshaller("application/json", BodyConverter.JSON);
+        router.converter("application/json", BodyConverter.JSON);
 
         router.delete("/api/todos")
                 .action(rc -> todos.clear())

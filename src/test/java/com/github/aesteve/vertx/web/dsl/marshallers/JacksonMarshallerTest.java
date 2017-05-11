@@ -23,7 +23,7 @@ public class JacksonMarshallerTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
-        router.marshaller("application/json", BodyConverter.JSON);
+        router.converter("application/json", BodyConverter.JSON);
         router.withErrorDetails(true);
         router.get(JSON_PATH)
                 .send(rc -> new MockObject());

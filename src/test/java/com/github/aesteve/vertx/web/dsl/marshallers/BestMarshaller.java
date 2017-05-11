@@ -21,8 +21,8 @@ public class BestMarshaller extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
-        router.marshaller("application/json", JSON);
-        router.marshaller("text/plain", PLAIN);
+        router.converter("application/json", JSON);
+        router.converter("text/plain", PLAIN);
         router.get(BEST_MARSHALLER_URL)
                 .produces("application/json")
                 .produces("text/plain")

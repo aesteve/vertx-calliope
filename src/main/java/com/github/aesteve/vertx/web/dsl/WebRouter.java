@@ -18,7 +18,7 @@ public interface WebRouter extends ErrorHandling<WebRouter>, Routing {
     Router router();
 
     /* Global */
-    WebRouter marshaller(String mime, BodyConverter marshaller);
-    BodyConverter marshaller(RoutingContext context);
+    WebRouter converter(String mime, BodyConverter marshaller);
+    BodyConverter converter(RoutingContext context);
 
 }
