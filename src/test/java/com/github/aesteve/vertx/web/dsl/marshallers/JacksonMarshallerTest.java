@@ -3,8 +3,7 @@ package com.github.aesteve.vertx.web.dsl.marshallers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
-import io.vertx.core.Future;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxException;
 import io.vertx.core.json.Json;
@@ -24,7 +23,7 @@ public class JacksonMarshallerTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
-        router.marshaller("application/json", WebMarshaller.JSON);
+        router.marshaller("application/json", BodyConverter.JSON);
         router.withErrorDetails(true);
         router.get(JSON_PATH)
                 .send(rc -> new MockObject());

@@ -2,7 +2,7 @@ package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.WebRoute;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.github.aesteve.vertx.web.dsl.utils.CollectionUtils.firstValue;
 import static io.vertx.core.http.HttpMethod.*;
@@ -22,7 +21,7 @@ import static io.vertx.core.http.HttpMethod.*;
 public class WebRouterImpl implements WebRouter {
 
     private final List<WebRouteImpl> routes = new ArrayList<>();
-    private final Map<String, WebMarshaller> marshallers = new LinkedHashMap<>();
+    private final Map<String, BodyConverter> marshallers = new LinkedHashMap<>();
     final Vertx vertx;
     final Router router;
     boolean displayErrorDetails;
@@ -41,7 +40,7 @@ public class WebRouterImpl implements WebRouter {
 
     /* Global */
     @Override
-    public WebRouter marshaller(String mime, WebMarshaller marshaller) {
+    public WebRouter marshaller(String mime, BodyConverter marshaller) {
         marshallers.put(mime, marshaller);
         return this;
     }
@@ -64,7 +63,7 @@ public class WebRouterImpl implements WebRouter {
     }
 
     @Override
-    public WebMarshaller marshaller(RoutingContext context) {
+    public BodyConverter marshaller(RoutingContext context) {
         final String mime = context.getAcceptableContentType();
         if (mime != null) {
             return marshallers.get(context.getAcceptableContentType());

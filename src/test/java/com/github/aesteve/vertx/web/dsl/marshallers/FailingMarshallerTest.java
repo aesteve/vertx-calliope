@@ -2,8 +2,8 @@ package com.github.aesteve.vertx.web.dsl.marshallers;
 
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.StringWebMarshaller;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import com.github.aesteve.vertx.web.dsl.io.StringBodyConverter;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import com.github.aesteve.vertx.web.dsl.io.exceptions.MarshallingException;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -20,9 +20,9 @@ public class FailingMarshallerTest extends TestBase {
     private final static String FAILING_MARSHALLER_READ_URL = "/tests/marshallers/failing/read";
     private final static String FAILING_MARSHALLER_WRITE_URL = "/tests/marshallers/failing/write";
 
-    private WebMarshaller failingMarshaller = new StringWebMarshaller() {
+    private BodyConverter failingMarshaller = new StringBodyConverter<String>() {
         @Override
-        public <T> T fromString(String body, Class<T> clazz) throws MarshallingException {
+        public <T extends String> T fromString(String body, Class<T> clazz) throws MarshallingException {
             throw new MarshallingException("Can't read");
         }
 

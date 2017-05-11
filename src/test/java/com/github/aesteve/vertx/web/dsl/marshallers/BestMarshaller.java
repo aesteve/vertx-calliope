@@ -9,8 +9,8 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.JSON;
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
+import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.JSON;
+import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 
 public class BestMarshaller extends TestBase {

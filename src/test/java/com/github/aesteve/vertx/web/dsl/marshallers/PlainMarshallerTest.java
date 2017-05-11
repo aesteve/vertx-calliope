@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
+import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
 
 public class PlainMarshallerTest extends TestBase {

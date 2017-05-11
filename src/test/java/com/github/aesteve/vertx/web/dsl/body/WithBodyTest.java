@@ -2,7 +2,7 @@ package com.github.aesteve.vertx.web.dsl.body;
 
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.Json;
@@ -20,7 +20,7 @@ public class WithBodyTest extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(Vertx.vertx());
-        router.marshaller("application/json", WebMarshaller.JSON);
+        router.marshaller("application/json", BodyConverter.JSON);
         router.post(WITH_BODY_URL)
                 .withBody(MockObject.class)
                 .send();

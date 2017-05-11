@@ -1,7 +1,7 @@
 package com.github.aesteve.vertx.web.dsl.examples;
 
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -72,7 +72,7 @@ public class TodoBackendExample {
         Function<String, AsyncResult<Todo>> validId = idIsAnInt.andThen(todoExists);
 
         WebRouter router = WebRouter.router(Vertx.vertx());
-        router.marshaller("application/json", WebMarshaller.JSON);
+        router.marshaller("application/json", BodyConverter.JSON);
 
         router.delete("/api/todos")
                 .send(rc -> todos.clear());

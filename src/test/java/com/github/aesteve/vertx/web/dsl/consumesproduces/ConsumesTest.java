@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
+import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
 import static io.vertx.core.http.HttpHeaders.*;
 import org.junit.Test;
 

@@ -3,8 +3,8 @@ package com.github.aesteve.vertx.web.dsl.impl;
 import com.github.aesteve.vertx.web.dsl.WebRoute;
 import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
-import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.VertxException;
@@ -62,7 +62,7 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public WebRoute marshaller(String mime, WebMarshaller marshaller) {
+    public WebRoute marshaller(String mime, BodyConverter marshaller) {
         parent.marshaller(mime, marshaller);
         return this;
     }
@@ -93,7 +93,7 @@ public class WebRouteImpl implements WebRoute {
         });
     }
 
-    private <T> void marshall(WebMarshaller m, RoutingContext rc, T result) {
+    private <T> void marshall(BodyConverter m, RoutingContext rc, T result) {
         if (result == null) {
             rc.response().setStatusCode(404).end();
             return;
@@ -140,8 +140,8 @@ public class WebRouteImpl implements WebRoute {
         return routes;
     }
 
-    void withMarshaller(RoutingContext rc, Handler<WebMarshaller> handler) {
-        final WebMarshaller m = parent.marshaller(rc);
+    void withMarshaller(RoutingContext rc, Handler<BodyConverter> handler) {
+        final BodyConverter m = parent.marshaller(rc);
         if (m == null) {
             rc.fail(new VertxException("No marshaller found for " + rc.getAcceptableContentType()));
             return;

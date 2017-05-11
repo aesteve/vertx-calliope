@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
-import static com.github.aesteve.vertx.web.dsl.io.WebMarshaller.PLAIN;
+import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.yield;
 
