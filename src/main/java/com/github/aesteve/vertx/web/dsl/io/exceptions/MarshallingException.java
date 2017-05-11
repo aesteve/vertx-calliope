@@ -7,4 +7,9 @@ public class MarshallingException extends Exception {
         super(cause);
     }
 
+    public MarshallingException(String message) {
+        super(message);
+    }
+
+
 }

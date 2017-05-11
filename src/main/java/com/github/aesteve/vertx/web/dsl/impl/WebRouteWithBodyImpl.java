@@ -20,7 +20,9 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
         parent.handler(rc -> {
             parent.withMarshaller(rc, m -> {
                 rc.put(BODY_ID, m.fromRequestBody(rc, bodyClass));
-                rc.next();
+                if (!rc.failed()) {
+                    rc.next();
+                }
             });
         });
     }
@@ -40,7 +42,7 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
         parent.send(this::body, status);
     }
 
-    protected T body(RoutingContext rc) {
+    private T body(RoutingContext rc) {
         return rc.get(BODY_ID);
     }
 }
