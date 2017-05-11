@@ -22,10 +22,10 @@ public class WebRouterImpl implements WebRouter {
 
     private final List<WebRouteImpl> routes = new ArrayList<>();
     private final LinkedHashMap<String, BodyConverter> marshallers = new LinkedHashMap<>();
-    final Vertx vertx;
+    private final Vertx vertx;
     final Router router;
-    boolean displayErrorDetails;
-    Handler<RoutingContext> errorHandler;
+    private boolean displayErrorDetails;
+    private Handler<RoutingContext> errorHandler;
 
     public WebRouterImpl(Vertx vertx) {
         this.vertx = vertx;
@@ -86,51 +86,6 @@ public class WebRouterImpl implements WebRouter {
         final WebRouteImpl route = new WebRouteImpl(this, path, methods);
         routes.add(route);
         return route;
-    }
-
-    @Override
-    public WebRoute get(String path) {
-        return route(path, GET);
-    }
-
-    @Override
-    public WebRoute post(String path) {
-        return route(path, POST);
-    }
-
-    @Override
-    public WebRoute put(String path) {
-        return route(path, PUT);
-    }
-
-    @Override
-    public WebRoute patch(String path) {
-        return route(path, HttpMethod.PATCH);
-    }
-
-    @Override
-    public WebRoute delete(String path) {
-        return route(path, DELETE);
-    }
-
-    @Override
-    public WebRoute options(String path) {
-        return route(path, OPTIONS);
-    }
-
-    @Override
-    public WebRoute trace(String path) {
-        return route(path, TRACE);
-    }
-
-    @Override
-    public WebRoute connect(String path) {
-        return route(path, CONNECT);
-    }
-
-    @Override
-    public WebRoute head(String path) {
-        return route(path, HEAD);
     }
 
 }
