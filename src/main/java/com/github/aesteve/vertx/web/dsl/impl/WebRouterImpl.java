@@ -21,7 +21,7 @@ import static io.vertx.core.http.HttpMethod.*;
 public class WebRouterImpl implements WebRouter {
 
     private final List<WebRouteImpl> routes = new ArrayList<>();
-    private final Map<String, BodyConverter> marshallers = new LinkedHashMap<>();
+    private final LinkedHashMap<String, BodyConverter> marshallers = new LinkedHashMap<>();
     final Vertx vertx;
     final Router router;
     boolean displayErrorDetails;
