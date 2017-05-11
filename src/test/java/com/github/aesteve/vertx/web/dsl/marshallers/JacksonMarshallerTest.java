@@ -25,12 +25,13 @@ public class JacksonMarshallerTest extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
         router.marshaller("application/json", WebMarshaller.JSON);
+        router.withErrorDetails(true);
         router.get(JSON_PATH)
                 .send(rc -> new MockObject());
         router.get(ASYNC_JSON_PATH)
-                .sendFuture(rc -> yield(new MockObject()));
+                .send(rc -> yield(new MockObject()));
         router.get(ASYNC_JSON_PATH_FAILURE)
-                .sendFuture(rc -> fail(new VertxException("Sorry")));
+                .send(rc -> fail(new VertxException("Sorry")));
         return router;
     }
 

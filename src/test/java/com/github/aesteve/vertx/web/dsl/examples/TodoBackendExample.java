@@ -75,9 +75,9 @@ public class TodoBackendExample {
         router.marshaller("application/json", WebMarshaller.JSON);
 
         router.delete("/api/todos")
-                .sendFuture(rc -> todos.clear());
+                .send(rc -> todos.clear());
         router.get("/api/todos")
-                .sendFuture(rc -> todos.findAll());
+                .send(rc -> todos.findAll());
 
         router.post("/api/todos")
                 .withBody(Todo.class)
@@ -86,7 +86,7 @@ public class TodoBackendExample {
 
         router.get("/api/todos/:id")
                 .intParam("id")
-                .sendFuture(rc -> todos.findById(rc.get("id")));
+                .send(rc -> todos.findById(rc.get("id")));
 
         router.put("/api/todos/:id")
                 .intParam("id")
@@ -98,7 +98,7 @@ public class TodoBackendExample {
         router.delete("/api/todos/:id")
                 .intParam("id")
                 .checkParam("id", validId, 404, "Todo not found")
-                .sendFuture(rc -> todos.remove(rc.get("id")));
+                .send(rc -> todos.remove(rc.get("id")));
     }
 
     // Other stuff

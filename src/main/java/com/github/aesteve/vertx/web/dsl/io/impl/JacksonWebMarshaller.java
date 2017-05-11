@@ -29,4 +29,5 @@ public class JacksonWebMarshaller implements StringWebMarshaller {
             throw new MarshallingException(e);
         }
     }
+
 }

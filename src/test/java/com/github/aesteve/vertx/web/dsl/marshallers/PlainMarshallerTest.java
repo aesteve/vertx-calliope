@@ -38,7 +38,7 @@ public class PlainMarshallerTest extends TestBase {
                 );
         router.get(PLAIN_TXT_URL_FAILED)
                 .withErrorDetails(true)
-                .sendFuture(rc -> fail(new VertxException("Sorry")));
+                .send(rc -> fail(new VertxException("Sorry")));
         return router;
     }
 

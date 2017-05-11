@@ -2,7 +2,9 @@ package com.github.aesteve.vertx.web.dsl.io.impl;
 
 import com.github.aesteve.vertx.web.dsl.io.StringWebMarshaller;
 import com.github.aesteve.vertx.web.dsl.io.exceptions.MarshallingException;
+import io.vertx.core.Future;
 import io.vertx.core.VertxException;
+import io.vertx.ext.web.RoutingContext;
 
 public class PlainWebMarshaller implements StringWebMarshaller {
 
@@ -20,4 +22,5 @@ public class PlainWebMarshaller implements StringWebMarshaller {
     public <T> String toString(T payload) throws MarshallingException {
         return payload.toString();
     }
+
 }

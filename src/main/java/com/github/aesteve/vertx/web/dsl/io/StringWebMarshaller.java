@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.web.dsl.io;
 
 import com.github.aesteve.vertx.web.dsl.io.exceptions.MarshallingException;
+import io.vertx.core.Future;
 import io.vertx.ext.web.RoutingContext;
 
 public interface StringWebMarshaller extends WebMarshaller {
@@ -26,6 +27,17 @@ public interface StringWebMarshaller extends WebMarshaller {
         } catch (MarshallingException mse) {
             context.fail(mse);
         }
+    }
+
+    @Override
+    default <T> void toResponseBodyAsync(RoutingContext context, Future<T> payload) {
+        payload.setHandler(res -> {
+            if (res.failed()) {
+                context.fail(res.cause());
+                return;
+            }
+            toResponseBody(context, res.result());
+        });
     }
 
 }

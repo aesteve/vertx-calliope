@@ -5,10 +5,10 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public interface WebRouteWithBody<T> extends ResponseWritable {
+public interface WebRouteWithPayload<T> extends ResponseWritable {
 
-    <R> WebRouteWithBody<R> map(BiFunction<T, RoutingContext, R> mapper);
-    default <R> WebRouteWithBody<R> map(Function<T, R> mapper) {
+    <R> WebRouteWithPayload<R> map(BiFunction<T, RoutingContext, R> mapper);
+    default <R> WebRouteWithPayload<R> map(Function<T, R> mapper) {
         return map((body, rc) -> mapper.apply(body));
     }
 

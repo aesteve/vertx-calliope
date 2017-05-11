@@ -25,6 +25,7 @@ public class PureCheckTest extends TestingCheckBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
+        router.withErrorDetails(true);
         router.get(CHECK_URL)
                 .check(HEADER_NAME, "test", HttpServerRequest::getHeader, CHECK_HEADER)
                 .handler(rc -> {
@@ -32,9 +33,7 @@ public class PureCheckTest extends TestingCheckBase {
                 });
         router.get(CHECK_URL_CUSTOM)
                 .check(HEADER_NAME, HttpServerRequest::getHeader, CHECK_HEADER, 501, "Not implemented yet")
-                .handler(rc -> {
-                    rc.response().end(rc.<String>get(HEADER_NAME));
-                });
+                .handler(rc -> rc.response().end(rc.<String>get(HEADER_NAME)));
         return router;
     }
 

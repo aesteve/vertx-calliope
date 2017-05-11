@@ -1,15 +1,11 @@
 package com.github.aesteve.vertx.web.dsl;
 
-import com.github.aesteve.vertx.web.dsl.io.AsyncPayloadSupplier;
-import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.BiFunction;
@@ -36,9 +32,11 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
 
     /* Handler stuff, backwards-compatibility */
     WebRoute handler(Handler<RoutingContext> handler);
+    <T> WebRouteWithPayload<T> action(Function<RoutingContext, T> handler);
+
 
     /* Body */
-    <T> WebRouteWithBody<T> withBody(Class<T> bodyClass);
+    <T> WebRouteWithPayload<T> withBody(Class<T> bodyClass);
 
     /* Request checking */
     default <T> WebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker, int statusIfFailed, String errorMessage) {

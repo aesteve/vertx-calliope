@@ -1,19 +1,18 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
-import com.github.aesteve.vertx.web.dsl.WebRouteWithBody;
-import io.vertx.core.Future;
+import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWithBody<T> {
+public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRouteWithPayload<T> {
 
     private final static String BODY_ID = "$$vertx-request-body";
     protected WebRouteImpl parent;
 
-    public WebRouteWithBodyImpl(WebRouteImpl parent, Class<T> bodyClass) {
+    public WebRouteWithPayloadImpl(WebRouteImpl parent, Class<T> bodyClass) {
         super(parent);
         this.parent = parent;
         parent.handler(BodyHandler.create());
@@ -27,14 +26,25 @@ public class WebRouteWithBodyImpl<T> extends WebRouteImpl implements WebRouteWit
         });
     }
 
+    public WebRouteWithPayloadImpl(WebRouteImpl parent, Function<RoutingContext, T> handler) {
+        super(parent);
+        this.parent = parent;
+        parent.handler(rc -> {
+            rc.put(BODY_ID, handler.apply(rc));
+            if (!rc.failed()) {
+                rc.next();
+            }
+        });
+    }
+
     @Override
     @SuppressWarnings("unchecked")
-    public <R> WebRouteWithBody<R> map(BiFunction<T, RoutingContext, R> mapper) {
+    public <R> WebRouteWithPayload<R> map(BiFunction<T, RoutingContext, R> mapper) {
         parent.handler(rc -> {
             rc.put(BODY_ID, mapper.apply(body(rc), rc));
             rc.next();
         });
-        return (WebRouteWithBody<R>)this;
+        return (WebRouteWithPayload<R>)this;
     }
 
     @Override

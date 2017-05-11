@@ -1,11 +1,11 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.WebRoute;
-import com.github.aesteve.vertx.web.dsl.WebRouteWithBody;
+import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.AsyncPayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpMethod;
@@ -15,6 +15,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.ErrorHandler;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class WebRouteImpl implements WebRoute {
@@ -73,8 +74,13 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> WebRouteWithBody<T> withBody(Class<T> bodyClass) {
-        return new WebRouteWithBodyImpl<>(this, bodyClass);
+    public <T> WebRouteWithPayload<T> action(Function<RoutingContext, T> handler) {
+        return new WebRouteWithPayloadImpl<>(this, handler);
+    }
+
+    @Override
+    public <T> WebRouteWithPayload<T> withBody(Class<T> bodyClass) {
+        return new WebRouteWithPayloadImpl<>(this, bodyClass);
     }
 
     @Override
@@ -83,22 +89,6 @@ public class WebRouteImpl implements WebRoute {
             withMarshaller(rc, m -> {
                 rc.response().setStatusCode(statusCode);
                 marshall(m, rc, supplier.getPayload(rc));
-            });
-        });
-    }
-
-    @Override
-    public <T> void sendFuture(AsyncPayloadSupplier<T> supplier, int statusCode) {
-        handler(rc -> {
-            withMarshaller(rc, m -> {
-                supplier.getPayload(rc).setHandler(res -> {
-                    if (res.failed()) {
-                        rc.fail(res.cause());
-                        return;
-                    }
-                    rc.response().setStatusCode(statusCode);
-                    marshall(m, rc, res.result());
-                });
             });
         });
     }
@@ -115,6 +105,8 @@ public class WebRouteImpl implements WebRoute {
             } else {
                 rc.response().setStatusCode(404).end();
             }
+        } else if (result instanceof Future) {
+            m.toResponseBodyAsync(rc, (Future<?>)result);
         } else {
             m.toResponseBody(rc, result);
         }
