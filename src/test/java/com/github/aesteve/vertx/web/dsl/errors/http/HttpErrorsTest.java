@@ -57,7 +57,14 @@ public class HttpErrorsTest {
                 { 414, new HttpErrorTest(HttpError::requestURITooLong, HttpError::requestURITooLong) },
                 { 415, new HttpErrorTest(HttpError::unsupportedMediaType, HttpError::unsupportedMediaType) },
                 { 416, new HttpErrorTest(HttpError::requestRangeNotSatisfiable, HttpError::requestRangeNotSatisfiable) },
-                { 417, new HttpErrorTest(HttpError::expectationFailed, HttpError::expectationFailed) }
+                { 417, new HttpErrorTest(HttpError::expectationFailed, HttpError::expectationFailed) },
+
+                { 500, new HttpErrorTest(HttpError::internalServerError, HttpError::internalServerError) },
+                { 501, new HttpErrorTest(HttpError::notImplemented, HttpError::notImplemented) },
+                { 502, new HttpErrorTest(HttpError::badGateway, HttpError::badGateway) },
+                { 503, new HttpErrorTest(HttpError::serviceUnavailable, HttpError::serviceUnavailable) },
+                { 504, new HttpErrorTest(HttpError::gatewayTimeout, HttpError::gatewayTimeout) },
+                { 505, new HttpErrorTest(HttpError::httpVersionNotSupported, HttpError::httpVersionNotSupported) },
         });
     }
     private final static String MSG = "The error message";

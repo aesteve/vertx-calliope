@@ -177,5 +177,57 @@ public class HttpError {
         return new HttpError(417, message);
     }
 
+    /** 50x */
+    /* 500 */
+    public static HttpError INTERNAL_SERVER_ERROR = internalServerError();
+    public static HttpError internalServerError() {
+        return new HttpError(500);
+    }
+    public static HttpError internalServerError(String message) {
+        return new HttpError(500, message);
+    }
+    /* 501 */
+    public static HttpError NOT_IMPLEMENTED = notImplemented();
+    public static HttpError notImplemented() {
+        return new HttpError(501);
+    }
+    public static HttpError notImplemented(String message) {
+        return new HttpError(501, message);
+    }
+    /* 502 */
+    public static HttpError BAD_GATEWAY = badGateway();
+    public static HttpError badGateway() {
+        return new HttpError(502);
+    }
+    public static HttpError badGateway(String message) {
+        return new HttpError(502, message);
+    }
+    /* 503 */
+    public static HttpError SERVICE_UNAVAILABLE = serviceUnavailable();
+    public static HttpError serviceUnavailable() {
+        return new HttpError(503);
+    }
+    public static HttpError serviceUnavailable(String message) {
+        return new HttpError(503, message);
+    }
+    public static HttpError serviceUnavailable(String message, String retryAfter) {
+        return new HttpError(503, message).header(RETRY_AFTER, retryAfter);
+    }
+    /* 504 */
+    public static HttpError GATEWAY_TIMEOUT = gatewayTimeout();
+    public static HttpError gatewayTimeout() {
+        return new HttpError(504);
+    }
+    public static HttpError gatewayTimeout(String message) {
+        return new HttpError(504, message);
+    }
+    /* 505 */
+    public static HttpError HTTP_VERSION_NOT_SUPPORTED = httpVersionNotSupported();
+    public static HttpError httpVersionNotSupported() {
+        return new HttpError(505);
+    }
+    public static HttpError httpVersionNotSupported(String message) {
+        return new HttpError(505, message);
+    }
 
 }

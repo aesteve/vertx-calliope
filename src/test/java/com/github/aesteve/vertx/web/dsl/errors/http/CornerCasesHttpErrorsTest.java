@@ -59,4 +59,14 @@ public class CornerCasesHttpErrorsTest {
         assertEquals(range, error.additionalHeaders.get(CONTENT_RANGE.toString()));
     }
 
+
+    @Test
+    public void test503() {
+        String retryAfter = "10";
+        HttpError error = serviceUnavailable(null, retryAfter);
+        assertEquals(503, error.status);
+        assertEquals(1, error.additionalHeaders.size());
+        assertNull(error.message);
+        assertEquals(retryAfter, error.additionalHeaders.get(RETRY_AFTER.toString()));
+    }
 }
