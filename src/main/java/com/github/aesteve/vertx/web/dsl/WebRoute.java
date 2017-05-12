@@ -38,31 +38,31 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
     <T> WebRouteWithPayload<T> withBody(Class<T> bodyClass);
 
     /* Request checking */
-    <T> CheckedWebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker);
-    default <T> CheckedWebRoute check(String paramName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker) {
+    <T> CheckedWebRoute<T> check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker);
+    default <T> CheckedWebRoute<T> check(String paramName, BiFunction<HttpServerRequest, String, String> getParam, Function<String, AsyncResult<T>> checker) {
         return check(paramName, paramName, getParam, checker);
     }
 
-    default <T> CheckedWebRoute checkHeader(String name, String ctxName, Function<String, AsyncResult<T>> checker) {
+    default <T> CheckedWebRoute<T> checkHeader(String name, String ctxName, Function<String, AsyncResult<T>> checker) {
         return check(name, ctxName, HttpServerRequest::getHeader, checker);
     }
-    default <T> CheckedWebRoute checkHeader(String name, Function<String, AsyncResult<T>> checker) {
+    default <T> CheckedWebRoute<T> checkHeader(String name, Function<String, AsyncResult<T>> checker) {
         return checkHeader(name, name, checker);
     }
-    default <T> CheckedWebRoute checkParam(String name, String ctxName, Function<String, AsyncResult<T>> checker) {
+    default <T> CheckedWebRoute<T> checkParam(String name, String ctxName, Function<String, AsyncResult<T>> checker) {
         return check(name, ctxName, HttpServerRequest::getParam, checker);
     }
-    default <T> CheckedWebRoute checkParam(String name, Function<String, AsyncResult<T>> checker) {
+    default <T> CheckedWebRoute<T> checkParam(String name, Function<String, AsyncResult<T>> checker) {
         return checkParam(name, name, checker);
     }
 
-    default CheckedWebRoute intParam(String name) {
+    default CheckedWebRoute<Integer> intParam(String name) {
         return checkParam(name, async(Integer::parseInt));
     }
-    default CheckedWebRoute boolParam(String name) {
+    default CheckedWebRoute<Boolean> boolParam(String name) {
         return checkParam(name, async(Boolean::valueOf));
     }
-    default CheckedWebRoute dateParam(String name, String format) {
+    default CheckedWebRoute<Date> dateParam(String name, String format) {
         Function<String, AsyncResult<Date>> parsing = d -> {
             try {
                 return yield(new SimpleDateFormat(format).parse(d));

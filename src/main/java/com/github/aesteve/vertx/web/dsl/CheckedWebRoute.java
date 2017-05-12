@@ -6,11 +6,13 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.function.Function;
 
-public interface CheckedWebRoute {
+public interface CheckedWebRoute<T> {
 
     WebRoute orFail(int status);
     WebRoute orFail(HttpError error);
     WebRoute orFail(Function<String, HttpError> errorSupplier);
     WebRoute orFail(Handler<RoutingContext> handler);
+
+    WebRoute orElse(T defaultValue);
 
 }

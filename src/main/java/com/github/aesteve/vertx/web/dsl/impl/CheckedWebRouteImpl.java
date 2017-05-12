@@ -12,12 +12,13 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class CheckedWebRouteImpl<T> implements CheckedWebRoute {
+public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
 
     private final WebRouteImpl parent;
     private final String ctxName;
     private final Function<RoutingContext, String> getParamValue;
     private final Function<RoutingContext, AsyncResult<T>> checkParamValue;
+    private T defaultValue;
 
     CheckedWebRouteImpl(WebRouteImpl parent, BiFunction<HttpServerRequest, String, String> extract, Function<String, AsyncResult<T>> checker, String paramName, String ctxName) {
         this.parent = parent;
@@ -66,6 +67,19 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute {
                 return;
             }
             rc.put(ctxName, checked.result());
+            rc.next();
+        });
+    }
+
+    @Override
+    public WebRoute orElse(T defaultValue) {
+        return parent.handler(rc -> {
+            final AsyncResult<T> checked = checkParamValue.apply(rc);
+            if (checked.failed()) {
+                rc.put(ctxName, defaultValue);
+            } else {
+                rc.put(ctxName, checked.result());
+            }
             rc.next();
         });
     }
