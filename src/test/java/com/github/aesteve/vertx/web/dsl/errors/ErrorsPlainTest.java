@@ -47,7 +47,7 @@ public class ErrorsPlainTest extends TestBase {
                 .handler(failIfToldSo);
         router.get(CUSTOM_ERROR_HANDLER_URL)
                 .boolParam("fail").orElse(400)
-                .errorHandler(rc -> {
+                .onError(rc -> {
                     rc.response()
                         .setStatusCode(503)
                         .end(GENERIC_ERROR_MSG);

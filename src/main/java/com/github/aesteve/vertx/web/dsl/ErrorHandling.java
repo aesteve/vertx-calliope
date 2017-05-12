@@ -6,7 +6,7 @@ import io.vertx.ext.web.RoutingContext;
 public interface ErrorHandling<T> {
 
     T withErrorDetails(boolean details);
-    T errorHandler(Handler<RoutingContext> errorHandler);
+    T onError(Handler<RoutingContext> errorHandler);
     Handler<RoutingContext> errorHandler();
 
 }

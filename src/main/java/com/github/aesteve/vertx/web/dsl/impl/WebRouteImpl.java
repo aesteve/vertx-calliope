@@ -180,7 +180,7 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public WebRoute errorHandler(Handler<RoutingContext> errorHandler) {
+    public WebRoute onError(Handler<RoutingContext> errorHandler) {
         this.errorHandler = errorHandler;
         return this;
     }

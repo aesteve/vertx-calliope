@@ -16,7 +16,7 @@ public class ErrorHandlerAtRouterLevel extends TestBase {
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
-        router.errorHandler(rc -> rc.response().setStatusCode(500).end("Error !"));
+        router.onError(rc -> rc.response().setStatusCode(500).end("Error !"));
         router.get(ERROR_HANDLER_ROUTER_URL)
                 .handler(rc -> rc.fail(new VertxException("woops")));
         return router;

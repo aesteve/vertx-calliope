@@ -71,7 +71,7 @@ public class WebRouterImpl implements WebRouter {
     }
 
     @Override
-    public WebRouter errorHandler(Handler<RoutingContext> errorHandler) {
+    public WebRouter onError(Handler<RoutingContext> errorHandler) {
         this.errorHandler = errorHandler;
         return this;
     }
