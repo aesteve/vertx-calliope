@@ -5,3 +5,4 @@ target
 *.ipr
 *.iws
 build
+.DS_STORE
