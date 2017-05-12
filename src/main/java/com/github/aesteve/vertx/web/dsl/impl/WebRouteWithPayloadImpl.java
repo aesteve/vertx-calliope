@@ -4,12 +4,13 @@ import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRouteWithPayload<T> {
 
-    private final static String BODY_ID = "$$vertx-request-body";
+    public final static String BODY_ID = "$$vertx-request-body";
     protected WebRouteImpl parent;
 
     public WebRouteWithPayloadImpl(WebRouteImpl parent, Class<T> bodyClass) {
@@ -17,7 +18,7 @@ public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRoute
         this.parent = parent;
         parent.handler(BodyHandler.create());
         parent.handler(rc -> {
-            parent.withMarshaller(rc, m -> {
+            parent.withUnmarshaller(rc, m -> {
                 rc.put(BODY_ID, m.fromRequestBody(rc, bodyClass));
                 if (!rc.failed()) {
                     rc.next();
@@ -45,6 +46,13 @@ public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRoute
             rc.next();
         });
         return (WebRouteWithPayload<R>)this;
+    }
+
+    @Override
+    public void fold(BiConsumer<T, RoutingContext> handler) {
+        parent.handler(rc -> {
+            handler.accept(body(rc), rc);
+        });
     }
 
     @Override

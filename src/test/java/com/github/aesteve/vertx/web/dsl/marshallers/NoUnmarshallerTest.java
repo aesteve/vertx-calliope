@@ -8,31 +8,33 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
-public class NoMarshallerTest extends TestBase {
+public class NoUnmarshallerTest extends TestBase {
 
-    private final static String NO_MARSHALLER_URL = "/tests/marshallers/nomarshaller";
+    private final static String NO_UNMARSHALLER_URL = "/tests/marshallers/nounmarshaller";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
-        router.get(NO_MARSHALLER_URL)
+        router.get(NO_UNMARSHALLER_URL)
                 .withErrorDetails(true)
-                .produces("text/plain")
-                .send(rc -> new MockObject());
+                .consumes("text/plain")
+                .withBody(MockObject.class)
+                .send(null);
         return router;
     }
 
     @Test
-    public void testNoMarshaller(TestContext ctx) {
+    public void testNoUnMarshaller(TestContext ctx) {
         Async async = ctx.async();
-        client().get(NO_MARSHALLER_URL, resp -> {
+        client().get(NO_UNMARSHALLER_URL, resp -> {
             ctx.assertEquals(500, resp.statusCode());
             resp.bodyHandler(buffer -> {
-                ctx.assertTrue(buffer.toString().contains("No marshaller found for text/plain"));
+                ctx.assertTrue(buffer.toString().contains("No unmarshaller found for text/plain"));
                 async.complete();
             });
-        }).putHeader(ACCEPT, "text/plain").end();
+        }).putHeader(CONTENT_TYPE, "text/plain").end("something");
     }
 
 

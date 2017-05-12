@@ -2,7 +2,6 @@ package com.github.aesteve.vertx.web.dsl.utils;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.VertxException;
 
 import java.util.function.Function;
 

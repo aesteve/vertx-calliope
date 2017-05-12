@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.web.dsl.errors;
 
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxException;
@@ -10,13 +11,17 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.web.RoutingContext;
 import org.junit.Test;
 
+import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_LENGTH;
 
 public class ErrorsPlainTest extends TestBase {
 
     private final static String WITH_STACKTRACE_URL = "/tests/errors/withstack";
     private final static String WITHOUT_STACKTRACE_URL = "/tests/errors/withoutstack";
     private final static String CUSTOM_ERROR_HANDLER_URL = "/tests/errors/custom";
+    private final static String WITH_HTTP_ERROR_NO_MARSHALLER = "/tests/errors/status/nomarshaller";
+    private final static String WITH_HTTP_ERROR_MARSHALLER = "/tests/errors/status/marshaller";
     private final static String ALL_GOOD = "Everything's fine";
     private final static VertxException FAILURE = new VertxException("Failed on purpose");
     private final static String GENERIC_ERROR_MSG = "failed :'(";
@@ -34,20 +39,27 @@ public class ErrorsPlainTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.withErrorDetails(true);
         router.get(WITH_STACKTRACE_URL)
-                .boolParam("fail")
+                .boolParam("fail").orElse(400)
                 .handler(failIfToldSo);
         router.get(WITHOUT_STACKTRACE_URL)
-                .boolParam("fail")
+                .boolParam("fail").orElse(400)
                 .withErrorDetails(false) // can be overriden
                 .handler(failIfToldSo);
         router.get(CUSTOM_ERROR_HANDLER_URL)
-                .boolParam("fail")
+                .boolParam("fail").orElse(400)
                 .errorHandler(rc -> {
                     rc.response()
                         .setStatusCode(503)
                         .end(GENERIC_ERROR_MSG);
                 })
                 .handler(failIfToldSo);
+        router.get(WITH_HTTP_ERROR_NO_MARSHALLER)
+                .intParam("lala").orElse(notFound())
+                .handler(rc -> rc.response().end("ok"));
+        router.get(WITH_HTTP_ERROR_MARSHALLER)
+                .marshaller("text/plain", BodyConverter.PLAIN)
+                .intParam("lala").orElse(notFound())
+                .handler(rc -> rc.response().end("ok"));
         return router;
     }
 
@@ -86,6 +98,27 @@ public class ErrorsPlainTest extends TestBase {
                 ctx.assertEquals(buff.toString(), GENERIC_ERROR_MSG);
                 async.complete();
             });
+        }).putHeader(ACCEPT, "text/plain").end();
+    }
+
+    @Test
+    public void testHttpErrorInPlainTest(TestContext ctx) {
+        Async async = ctx.async();
+        client().get(WITH_HTTP_ERROR_NO_MARSHALLER, resp -> {
+            ctx.assertEquals(404, resp.statusCode());
+            ctx.assertEquals("0", resp.getHeader(CONTENT_LENGTH));
+            async.complete();
+        }).putHeader(ACCEPT, "text/plain").end();
+    }
+
+
+    @Test
+    public void testHttpErrorMarshalled(TestContext ctx) {
+        Async async = ctx.async();
+        client().get(WITH_HTTP_ERROR_NO_MARSHALLER, resp -> {
+            ctx.assertEquals(404, resp.statusCode());
+            ctx.assertEquals("0", resp.getHeader(CONTENT_LENGTH));
+            async.complete();
         }).putHeader(ACCEPT, "text/plain").end();
     }
 

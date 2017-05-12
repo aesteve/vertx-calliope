@@ -2,15 +2,19 @@ package com.github.aesteve.vertx.web.dsl.marshallers;
 
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
-import com.github.aesteve.vertx.web.dsl.io.StringBodyConverter;
+import com.github.aesteve.vertx.web.dsl.errors.HttpError;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
+import com.github.aesteve.vertx.web.dsl.io.StringBodyConverter;
 import com.github.aesteve.vertx.web.dsl.io.exceptions.MarshallingException;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.web.RoutingContext;
 import org.junit.Test;
+
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
@@ -21,6 +25,12 @@ public class FailingMarshallerTest extends TestBase {
     private final static String FAILING_MARSHALLER_WRITE_URL = "/tests/marshallers/failing/write";
 
     private BodyConverter failingMarshaller = new StringBodyConverter<String>() {
+
+        @Override
+        public void toResponseBody(RoutingContext context, HttpError payload) {
+            context.fail(new VertxException("Not Implemented"));
+        }
+
         @Override
         public <T extends String> T fromString(String body, Class<T> clazz) throws MarshallingException {
             throw new MarshallingException("Can't read");

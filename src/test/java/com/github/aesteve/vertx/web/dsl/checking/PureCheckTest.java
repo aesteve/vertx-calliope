@@ -27,12 +27,13 @@ public class PureCheckTest extends TestingCheckBase {
         WebRouter router = WebRouter.router(vertx);
         router.withErrorDetails(true);
         router.get(CHECK_URL)
-                .check(HEADER_NAME, "test", HttpServerRequest::getHeader, CHECK_HEADER)
+                .check(HEADER_NAME, "test", HttpServerRequest::getHeader, CHECK_HEADER).orElse(400)
                 .handler(rc -> {
                     rc.response().end(rc.<String>get("test"));
                 });
         router.get(CHECK_URL_CUSTOM)
-                .check(HEADER_NAME, HttpServerRequest::getHeader, CHECK_HEADER, 501, "Not implemented yet")
+                .check(HEADER_NAME, HttpServerRequest::getHeader, CHECK_HEADER)
+                .orElse(501)
                 .handler(rc -> rc.response().end(rc.<String>get(HEADER_NAME)));
         return router;
     }

@@ -6,10 +6,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import org.junit.Test;
 
 import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
-import static io.vertx.core.http.HttpHeaders.*;
-import org.junit.Test;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class ConsumesTest extends TestBase {
 

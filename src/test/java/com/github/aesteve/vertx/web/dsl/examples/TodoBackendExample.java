@@ -1,14 +1,20 @@
 package com.github.aesteve.vertx.web.dsl.examples;
 
 import com.github.aesteve.vertx.web.dsl.WebRouter;
+import com.github.aesteve.vertx.web.dsl.errors.HttpError;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+
+import static com.github.aesteve.vertx.web.dsl.errors.HttpError.badRequest;
+import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 
 /* FIXME : remove this class and make proper doc / examples */
 public class TodoBackendExample {
@@ -70,6 +76,8 @@ public class TodoBackendExample {
         Function<Integer, AsyncResult<Todo>> todoExists = todos::todoExists;
         Function<String, Integer> idIsAnInt = Integer::parseInt;
         Function<String, AsyncResult<Todo>> validId = idIsAnInt.andThen(todoExists);
+        HttpError invalidTodoId = badRequest("Todo identifier is not an integer");
+        Function<String, HttpError> todoNotFound = id -> notFound("Todo " + id + " not found");
 
         WebRouter router = WebRouter.router(Vertx.vertx());
         router.converter("application/json", BodyConverter.JSON);
@@ -88,18 +96,19 @@ public class TodoBackendExample {
 
         router.get("/api/todos/:id")
                 .intParam("id")
+                .orElse(invalidTodoId)
                 .send(rc -> todos.findById(rc.get("id")));
 
         router.put("/api/todos/:id")
-                .intParam("id")
-                .checkParam("id", validId, 404, "Todo not found")
+                .intParam("id").orElse(invalidTodoId)
+                .checkParam("id", validId).orElse(todoNotFound)
                 .withBody(Todo.class)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
                 .send();
 
         router.delete("/api/todos/:id")
-                .intParam("id")
-                .checkParam("id", validId, 404, "Todo not found")
+                .intParam("id").orElse(invalidTodoId)
+                .checkParam("id", validId).orElse(todoNotFound)
                 .send(rc -> todos.remove(rc.get("id")));
     }
 

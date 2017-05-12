@@ -3,8 +3,6 @@ package com.github.aesteve.vertx.web.dsl;
 import io.vertx.core.http.HttpMethod;
 
 import static io.vertx.core.http.HttpMethod.*;
-import static io.vertx.core.http.HttpMethod.CONNECT;
-import static io.vertx.core.http.HttpMethod.HEAD;
 
 public interface Routing {
 

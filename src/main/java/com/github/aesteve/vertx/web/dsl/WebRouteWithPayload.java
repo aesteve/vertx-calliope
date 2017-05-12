@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.web.dsl;
 
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -12,6 +13,7 @@ public interface WebRouteWithPayload<T> extends ResponseWritable {
         return map((body, rc) -> mapper.apply(body));
     }
 
+    void fold(BiConsumer<T, RoutingContext> handler);
     void send(int status);
     default void send() {
         send(200);

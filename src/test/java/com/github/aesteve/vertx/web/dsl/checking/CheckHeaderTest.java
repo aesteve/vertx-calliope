@@ -16,6 +16,7 @@ import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.yield;
 public class CheckHeaderTest extends TestingCheckBase {
 
     private final static String CHECK_HEADER_URL = "/tests/checking/header";
+    private final static String CHECK_HEADER_URL_NONAME = "/tests/checking/header/noname";
     private final static String HEADER_NAME = "X-Custom-Header";
     private final static String CORRECT_HEADER = "expected_value";
 
@@ -26,9 +27,14 @@ public class CheckHeaderTest extends TestingCheckBase {
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
         router.get(CHECK_HEADER_URL)
-                .checkHeader(HEADER_NAME, "test", CHECK_HEADER)
+                .checkHeader(HEADER_NAME, "test", CHECK_HEADER).orElse(400)
                 .handler(rc -> {
                     rc.response().end(rc.<String>get("test"));
+                });
+        router.get(CHECK_HEADER_URL_NONAME)
+                .checkHeader(HEADER_NAME, CHECK_HEADER).orElse(400)
+                .handler(rc -> {
+                    rc.response().end(rc.<String>get(HEADER_NAME));
                 });
         return router;
     }
@@ -51,10 +57,33 @@ public class CheckHeaderTest extends TestingCheckBase {
         }).putHeader(HEADER_NAME, "bad").end();
     }
 
-
     @Test
     public void correctHeaderShouldBe400(TestContext ctx) {
         testOk(CHECK_HEADER_URL, ctx);
     }
+
+    @Test
+    public void noHeaderNoNameShouldBe400(TestContext ctx) {
+        Async async = ctx.async();
+        client().getNow(CHECK_HEADER_URL_NONAME, resp -> {
+            ctx.assertEquals(400, resp.statusCode());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void invalidHeaderNoNameShouldBe400(TestContext ctx) {
+        Async async = ctx.async();
+        client().get(CHECK_HEADER_URL_NONAME, resp -> {
+            ctx.assertEquals(400, resp.statusCode());
+            async.complete();
+        }).putHeader(HEADER_NAME, "bad").end();
+    }
+
+    @Test
+    public void correctHeaderNoNameShouldBe400(TestContext ctx) {
+        testOk(CHECK_HEADER_URL_NONAME, ctx);
+    }
+
 
 }

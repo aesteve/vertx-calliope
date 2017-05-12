@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
+import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 import static com.github.aesteve.vertx.web.dsl.io.BodyConverter.PLAIN;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.yield;
@@ -26,7 +27,8 @@ public class CheckingParamTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.converter("text/plain", PLAIN);
         router.get(CHECK_404_URL)
-                .checkParam("test1", correctParameter, 404, "Param test1 not found")
+                .checkParam("test1", correctParameter)
+                .orElse(notFound("Param test1 not found"))
                 .send(rc -> "ok");
         return router;
     }

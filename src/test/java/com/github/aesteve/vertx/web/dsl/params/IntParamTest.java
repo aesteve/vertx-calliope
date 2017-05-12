@@ -6,6 +6,7 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
+import static com.github.aesteve.vertx.web.dsl.errors.HttpError.BAD_REQUEST;
 
 public class IntParamTest extends TestBase {
 
@@ -14,7 +15,7 @@ public class IntParamTest extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
         router.get("/tests/int")
-                .intParam("test")
+                .intParam("test").orElse(BAD_REQUEST)
                 .handler(ctx -> {
                     final int test = ctx.get("test");
                     ctx.response().end("param = " + test);
