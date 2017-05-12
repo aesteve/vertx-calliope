@@ -8,9 +8,9 @@ import java.util.function.Function;
 
 public interface CheckedWebRoute {
 
-    WebRoute orElse(int status);
-    WebRoute orElse(HttpError error);
-    WebRoute orElse(Function<String, HttpError> errorSupplier);
-    WebRoute orElse(Handler<RoutingContext> handler);
+    WebRoute orFail(int status);
+    WebRoute orFail(HttpError error);
+    WebRoute orFail(Function<String, HttpError> errorSupplier);
+    WebRoute orFail(Handler<RoutingContext> handler);
 
 }

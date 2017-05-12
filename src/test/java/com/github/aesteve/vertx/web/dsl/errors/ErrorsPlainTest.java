@@ -39,14 +39,14 @@ public class ErrorsPlainTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.withErrorDetails(true);
         router.get(WITH_STACKTRACE_URL)
-                .boolParam("fail").orElse(400)
+                .boolParam("fail").orFail(400)
                 .handler(failIfToldSo);
         router.get(WITHOUT_STACKTRACE_URL)
-                .boolParam("fail").orElse(400)
+                .boolParam("fail").orFail(400)
                 .withErrorDetails(false) // can be overriden
                 .handler(failIfToldSo);
         router.get(CUSTOM_ERROR_HANDLER_URL)
-                .boolParam("fail").orElse(400)
+                .boolParam("fail").orFail(400)
                 .onError(rc -> {
                     rc.response()
                         .setStatusCode(503)
@@ -54,11 +54,11 @@ public class ErrorsPlainTest extends TestBase {
                 })
                 .handler(failIfToldSo);
         router.get(WITH_HTTP_ERROR_NO_MARSHALLER)
-                .intParam("lala").orElse(notFound())
+                .intParam("lala").orFail(notFound())
                 .handler(rc -> rc.response().end("ok"));
         router.get(WITH_HTTP_ERROR_MARSHALLER)
                 .marshaller("text/plain", BodyConverter.PLAIN)
-                .intParam("lala").orElse(notFound())
+                .intParam("lala").orFail(notFound())
                 .handler(rc -> rc.response().end("ok"));
         return router;
     }

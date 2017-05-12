@@ -19,7 +19,7 @@ public class DateParamTest extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
         router.get(DATE_PARAM_URL)
-                .dateParam("date", EXPECTED_FMT).orElse(400)
+                .dateParam("date", EXPECTED_FMT).orFail(400)
                 .handler(rc -> {
                     Date d = rc.get("date");
                     rc.response().end(String.valueOf(d.getTime()));

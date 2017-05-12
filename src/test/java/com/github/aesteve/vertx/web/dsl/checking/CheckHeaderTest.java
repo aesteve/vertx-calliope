@@ -27,12 +27,12 @@ public class CheckHeaderTest extends TestingCheckBase {
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
         router.get(CHECK_HEADER_URL)
-                .checkHeader(HEADER_NAME, "test", CHECK_HEADER).orElse(400)
+                .checkHeader(HEADER_NAME, "test", CHECK_HEADER).orFail(400)
                 .handler(rc -> {
                     rc.response().end(rc.<String>get("test"));
                 });
         router.get(CHECK_HEADER_URL_NONAME)
-                .checkHeader(HEADER_NAME, CHECK_HEADER).orElse(400)
+                .checkHeader(HEADER_NAME, CHECK_HEADER).orFail(400)
                 .handler(rc -> {
                     rc.response().end(rc.<String>get(HEADER_NAME));
                 });

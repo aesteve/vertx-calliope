@@ -27,7 +27,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute {
     }
 
     @Override
-    public WebRoute orElse(int status) {
+    public WebRoute orFail(int status) {
         return parent.handler(rc -> {
             final AsyncResult<T> checked = checkParamValue.apply(rc);
             if (checked.failed()) {
@@ -40,13 +40,13 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute {
     }
 
     @Override
-    public WebRoute orElse(HttpError error) {
-        return orElse(s -> error);
+    public WebRoute orFail(HttpError error) {
+        return orFail(s -> error);
     }
 
     @Override
-    public WebRoute orElse(Function<String, HttpError> errorSupplier) {
-        return orElse(rc -> {
+    public WebRoute orFail(Function<String, HttpError> errorSupplier) {
+        return orFail(rc -> {
             WebMarshaller m = parent.parent.marshaller(rc);
             HttpError error = getParamValue.andThen(errorSupplier).apply(rc);
             if (m != null) {
@@ -58,7 +58,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute {
     }
 
     @Override
-    public WebRoute orElse(Handler<RoutingContext> handler) {
+    public WebRoute orFail(Handler<RoutingContext> handler) {
         return parent.handler(rc -> {
             final AsyncResult<T> checked = checkParamValue.apply(rc);
             if (checked.failed()) {

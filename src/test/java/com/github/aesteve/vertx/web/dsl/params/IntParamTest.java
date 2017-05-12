@@ -15,7 +15,7 @@ public class IntParamTest extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
         router.get("/tests/int")
-                .intParam("test").orElse(BAD_REQUEST)
+                .intParam("test").orFail(BAD_REQUEST)
                 .handler(ctx -> {
                     final int test = ctx.get("test");
                     ctx.response().end("param = " + test);

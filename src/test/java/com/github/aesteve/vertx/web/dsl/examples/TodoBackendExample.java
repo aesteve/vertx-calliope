@@ -96,19 +96,19 @@ public class TodoBackendExample {
 
         router.get("/api/todos/:id")
                 .intParam("id")
-                .orElse(invalidTodoId)
+                .orFail(invalidTodoId)
                 .send(rc -> todos.findById(rc.get("id")));
 
         router.put("/api/todos/:id")
-                .intParam("id").orElse(invalidTodoId)
-                .checkParam("id", validId).orElse(todoNotFound)
+                .intParam("id").orFail(invalidTodoId)
+                .checkParam("id", validId).orFail(todoNotFound)
                 .withBody(Todo.class)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
                 .send();
 
         router.delete("/api/todos/:id")
-                .intParam("id").orElse(invalidTodoId)
-                .checkParam("id", validId).orElse(todoNotFound)
+                .intParam("id").orFail(invalidTodoId)
+                .checkParam("id", validId).orFail(todoNotFound)
                 .send(rc -> todos.remove(rc.get("id")));
     }
 

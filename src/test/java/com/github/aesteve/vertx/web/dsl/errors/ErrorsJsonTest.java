@@ -25,10 +25,10 @@ public class ErrorsJsonTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.marshaller("application/json", JSON);
         router.get(JSON_ERROR_MESSAGE_URL)
-                .intParam("present").orElse(badRequest(DOESNT_EXIST))
+                .intParam("present").orFail(badRequest(DOESNT_EXIST))
                 .handler(rc -> rc.response().end("ok"));
         router.get(JSON_ERROR_NOMESSAGE_URL)
-                .intParam("present").orElse(BAD_REQUEST)
+                .intParam("present").orFail(BAD_REQUEST)
                 .handler(rc -> rc.response().end("ok"));
         return router;
     }
