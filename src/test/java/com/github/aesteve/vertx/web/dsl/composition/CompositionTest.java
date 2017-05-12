@@ -20,7 +20,7 @@ public class CompositionTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.get(COMPOSED_ROUTE)
                 .produces("text/plain", PLAIN)
-                .action(rc -> PAYLOAD)
+                .perform(rc -> PAYLOAD)
                 .map(MockObject::getI)
                 .send();
         return router;

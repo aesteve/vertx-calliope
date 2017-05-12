@@ -83,7 +83,7 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> WebRouteWithPayload<T> action(Function<RoutingContext, T> handler) {
+    public <T> WebRouteWithPayload<T> perform(Function<RoutingContext, T> handler) {
         return new WebRouteWithPayloadImpl<>(this, handler);
     }
 

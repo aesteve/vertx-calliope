@@ -83,7 +83,7 @@ public class TodoBackendExample {
         router.converter("application/json", BodyConverter.JSON);
 
         router.delete("/api/todos")
-                .action(rc -> todos.clear())
+                .perform(rc -> todos.clear())
                 .send(204);
 
         router.get("/api/todos")

@@ -32,7 +32,7 @@ public interface WebRoute extends ResponseWritable, ErrorHandling<WebRoute> {
 
     /* Handler stuff, backwards-compatibility */
     WebRoute handler(Handler<RoutingContext> handler);
-    <T> WebRouteWithPayload<T> action(Function<RoutingContext, T> handler);
+    <T> WebRouteWithPayload<T> perform(Function<RoutingContext, T> handler);
 
 
     /* Body */
