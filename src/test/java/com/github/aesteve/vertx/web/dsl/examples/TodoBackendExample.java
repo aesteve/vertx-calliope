@@ -16,8 +16,6 @@ import java.util.function.Function;
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.badRequest;
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.asyncBool;
-import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
-import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.yield;
 
 /* FIXME : remove this class and make proper doc / examples */
 public class TodoBackendExample {
@@ -85,7 +83,7 @@ public class TodoBackendExample {
         router.converter("application/json", BodyConverter.JSON);
 
         router.delete("/api/todos")
-                .perform(rc -> todos.clear())
+                .lift(rc -> todos.clear())
                 .send(204);
 
         router.get("/api/todos")
@@ -99,7 +97,7 @@ public class TodoBackendExample {
         router.get("/api/todos/:id")
                 .intParam("id")
                 .orFail(invalidTodoId)
-                .send(rc -> todos.findById(rc.get("id")));
+                .fold((id, rc) -> todos.findById(id));
 
         router.put("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
@@ -112,7 +110,7 @@ public class TodoBackendExample {
         router.delete("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
                 .check(todos::todoExists).orFail(todoNotFound)
-                .send(rc -> todos.remove(rc.get("id")));
+                .fold((t, rc) -> todos.remove(rc.get("id")));
 
     }
 

@@ -1,9 +1,6 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
-import com.github.aesteve.vertx.web.dsl.CheckedWebRoute;
-import com.github.aesteve.vertx.web.dsl.WebRoute;
-import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
-import com.github.aesteve.vertx.web.dsl.WebRouter;
+import com.github.aesteve.vertx.web.dsl.*;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
@@ -83,8 +80,13 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> WebRouteWithPayload<T> perform(Function<RoutingContext, T> handler) {
+    public <T> WebRouteWithPayload<T> lift(Function<RoutingContext, T> handler) {
         return new WebRouteWithPayloadImpl<>(this, handler, rc -> "Action performed"); // FIXME : this isn't good design... Make the distinction between payload that come from the request, and payload created by the user
+    }
+
+    @Override
+    public <T> WebRouteWithAsyncPayload<T> liftAsync(Function<RoutingContext, Future<T>> handler) {
+        return new WebRouteWithAsyncPayloadImpl<>(this, handler);
     }
 
     @Override

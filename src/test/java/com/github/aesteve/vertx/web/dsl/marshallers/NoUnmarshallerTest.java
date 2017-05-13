@@ -21,7 +21,7 @@ public class NoUnmarshallerTest extends TestBase {
                 .withErrorDetails(true)
                 .consumes("text/plain")
                 .withBody(MockObject.class)
-                .send(null);
+                .fold((body, rc) -> rc.response().end());
         return router;
     }
 

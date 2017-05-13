@@ -38,7 +38,7 @@ public class FailingJacksonMarshallerTest extends TestBase {
         router.get(FAILING_JACKSON_WRITE_URL)
                 .withErrorDetails(true)
                 .produces(jsonMime, JSON)
-                .perform(rc -> new MockFailingObject())
+                .lift(rc -> new MockFailingObject())
                 .send();
         return router;
     }

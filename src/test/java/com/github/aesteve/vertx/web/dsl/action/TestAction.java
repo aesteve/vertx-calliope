@@ -23,7 +23,7 @@ public class TestAction extends TestBase {
                 .converter("application/json", JSON);
 
         router.get(ACTION_URL)
-                .perform(rc -> PAYLOAD)
+                .lift(rc -> PAYLOAD)
                 .send();
 
         return router;
