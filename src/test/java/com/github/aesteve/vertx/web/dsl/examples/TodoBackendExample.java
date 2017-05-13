@@ -15,6 +15,9 @@ import java.util.function.Function;
 
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.badRequest;
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
+import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.asyncBool;
+import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.fail;
+import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.yield;
 
 /* FIXME : remove this class and make proper doc / examples */
 public class TodoBackendExample {
@@ -74,7 +77,9 @@ public class TodoBackendExample {
     public static void main(String... args) {
         AsyncTodoService todos = new AsyncTodoService();
         HttpError invalidTodoId = badRequest("Todo identifier is not an integer");
+        HttpError cantReadTodo = badRequest("Can't read body as Todo, no taskName provided");
         Function<String, HttpError> todoNotFound = id -> notFound("Todo " + id + " not found");
+        Function<Todo, AsyncResult<Todo>> bodyIsValid = asyncBool(t -> t.taskName != null);
 
         WebRouter router = WebRouter.router(Vertx.vertx());
         router.converter("application/json", BodyConverter.JSON);
@@ -100,6 +105,7 @@ public class TodoBackendExample {
                 .intParam("id").orFail(invalidTodoId)
                 .check(todos::todoExists).orFail(todoNotFound)
                 .withBody(Todo.class)
+                .check(bodyIsValid).orFail(cantReadTodo)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
                 .send();
 
