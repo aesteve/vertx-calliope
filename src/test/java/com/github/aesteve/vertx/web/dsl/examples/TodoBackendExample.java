@@ -98,7 +98,7 @@ public class TodoBackendExample {
                 .intParam("id")
                 .orFail(invalidTodoId)
                 .send(rc -> todos.findById(rc.get("id")));
-
+/* FIXME !!!
         router.put("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
                 .checkParam("id", validId).orFail(todoNotFound)
@@ -110,6 +110,8 @@ public class TodoBackendExample {
                 .intParam("id").orFail(invalidTodoId)
                 .checkParam("id", validId).orFail(todoNotFound)
                 .send(rc -> todos.remove(rc.get("id")));
+
+*/
     }
 
     // Other stuff

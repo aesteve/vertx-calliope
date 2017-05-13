@@ -8,11 +8,11 @@ import java.util.function.Function;
 
 public interface CheckedWebRoute<T> {
 
-    WebRoute orFail(int status);
-    WebRoute orFail(HttpError error);
-    WebRoute orFail(Function<String, HttpError> errorSupplier);
-    WebRoute orFail(Handler<RoutingContext> handler);
+    WebRouteWithPayload<T> orFail(int status);
+    WebRouteWithPayload<T> orFail(HttpError error);
+    WebRouteWithPayload<T> orFail(Function<String, HttpError> errorSupplier);
+    WebRouteWithPayload<T> orFail(Handler<RoutingContext> handler);
 
-    WebRoute orElse(T defaultValue);
+    WebRouteWithPayload<T> orElse(T defaultValue);
 
 }

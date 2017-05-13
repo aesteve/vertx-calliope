@@ -29,7 +29,8 @@ public class CheckingParamTest extends TestBase {
         router.get(CHECK_404_URL)
                 .checkParam("test1", correctParameter)
                 .orFail(notFound("Param test1 not found"))
-                .send(rc -> "ok");
+                .map(test1 -> "ok")
+                .send();
         return router;
     }
 

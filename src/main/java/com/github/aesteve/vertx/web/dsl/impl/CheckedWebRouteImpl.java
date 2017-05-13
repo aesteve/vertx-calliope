@@ -2,7 +2,10 @@ package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.CheckedWebRoute;
 import com.github.aesteve.vertx.web.dsl.WebRoute;
+import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import com.github.aesteve.vertx.web.dsl.errors.HttpError;
+import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
+import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -14,8 +17,8 @@ import java.util.function.Function;
 
 public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
 
-    private final WebRouteImpl parent;
-    private final String ctxName;
+    final WebRouteImpl parent;
+    final String ctxName;
     private final Function<RoutingContext, String> getParamValue;
     private final Function<RoutingContext, AsyncResult<T>> checkParamValue;
     private T defaultValue;
@@ -28,8 +31,8 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
     }
 
     @Override
-    public WebRoute orFail(int status) {
-        return parent.handler(rc -> {
+    public WebRouteWithPayload<T> orFail(int status) {
+        parent.handler(rc -> {
             final AsyncResult<T> checked = checkParamValue.apply(rc);
             if (checked.failed()) {
                 rc.response().setStatusCode(status).end();
@@ -38,16 +41,17 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             rc.put(ctxName, checked.result());
             rc.next();
         });
+        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
     }
 
     @Override
-    public WebRoute orFail(HttpError error) {
+    public WebRouteWithPayload<T> orFail(HttpError error) {
         return orFail(s -> error);
     }
 
     @Override
-    public WebRoute orFail(Function<String, HttpError> errorSupplier) {
-        return orFail(rc -> {
+    public WebRouteWithPayload<T> orFail(Function<String, HttpError> errorSupplier) {
+        orFail(rc -> {
             WebMarshaller m = parent.parent.marshaller(rc);
             HttpError error = getParamValue.andThen(errorSupplier).apply(rc);
             if (m != null) {
@@ -56,11 +60,12 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
                 rc.response().setStatusCode(error.status).end();
             }
         });
+        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
     }
 
     @Override
-    public WebRoute orFail(Handler<RoutingContext> handler) {
-        return parent.handler(rc -> {
+    public WebRouteWithPayload<T> orFail(Handler<RoutingContext> handler) {
+        parent.handler(rc -> {
             final AsyncResult<T> checked = checkParamValue.apply(rc);
             if (checked.failed()) {
                 handler.handle(rc);
@@ -69,11 +74,12 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             rc.put(ctxName, checked.result());
             rc.next();
         });
+        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
     }
 
     @Override
-    public WebRoute orElse(T defaultValue) {
-        return parent.handler(rc -> {
+    public WebRouteWithPayload<T> orElse(T defaultValue) {
+        parent.handler(rc -> {
             final AsyncResult<T> checked = checkParamValue.apply(rc);
             if (checked.failed()) {
                 rc.put(ctxName, defaultValue);
@@ -82,6 +88,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             }
             rc.next();
         });
+        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
     }
 
 }

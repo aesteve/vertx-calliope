@@ -93,7 +93,7 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> CheckedWebRoute check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> extract, Function<String, AsyncResult<T>> checker) {
+    public <T> CheckedWebRoute<T> check(String paramName, String ctxName, BiFunction<HttpServerRequest, String, String> extract, Function<String, AsyncResult<T>> checker) {
         return new CheckedWebRouteImpl<>(this, extract, checker, paramName, ctxName);
     }
 

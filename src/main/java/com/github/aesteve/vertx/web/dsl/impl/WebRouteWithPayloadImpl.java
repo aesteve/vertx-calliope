@@ -12,6 +12,7 @@ public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRoute
 
     public final static String BODY_ID = "$$vertx-request-body";
     protected WebRouteImpl parent;
+    private String ctxName;
 
     public WebRouteWithPayloadImpl(WebRouteImpl parent, Class<T> bodyClass) {
         super(parent);
@@ -38,6 +39,13 @@ public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRoute
         });
     }
 
+
+    public WebRouteWithPayloadImpl(WebRouteImpl parent, String ctxName) {
+        super(parent);
+        this.parent = parent;
+        this.ctxName = ctxName;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <R> WebRouteWithPayload<R> map(BiFunction<T, RoutingContext, R> mapper) {
@@ -60,7 +68,7 @@ public class WebRouteWithPayloadImpl<T> extends WebRouteImpl implements WebRoute
         parent.send(this::body, status);
     }
 
-    private T body(RoutingContext rc) {
-        return rc.get(BODY_ID);
+    protected T body(RoutingContext rc) {
+        return rc.get(ctxName == null ? BODY_ID : ctxName);
     }
 }

@@ -11,6 +11,8 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.web.RoutingContext;
 import org.junit.Test;
 
+import java.util.function.BiConsumer;
+
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_LENGTH;
@@ -26,8 +28,8 @@ public class ErrorsPlainTest extends TestBase {
     private final static VertxException FAILURE = new VertxException("Failed on purpose");
     private final static String GENERIC_ERROR_MSG = "failed :'(";
 
-    private final static Handler<RoutingContext> failIfToldSo = rc -> {
-        if (rc.get("fail")) {
+    private final static BiConsumer<Boolean, RoutingContext> failIfToldSo = (fail, rc) -> {
+        if (fail) {
             rc.fail(FAILURE);
             return;
         }
@@ -40,26 +42,26 @@ public class ErrorsPlainTest extends TestBase {
         router.withErrorDetails(true);
         router.get(WITH_STACKTRACE_URL)
                 .boolParam("fail").orFail(400)
-                .handler(failIfToldSo);
+                .fold(failIfToldSo);
         router.get(WITHOUT_STACKTRACE_URL)
-                .boolParam("fail").orFail(400)
                 .withErrorDetails(false) // can be overriden
-                .handler(failIfToldSo);
-        router.get(CUSTOM_ERROR_HANDLER_URL)
                 .boolParam("fail").orFail(400)
+                .fold(failIfToldSo);
+        router.get(CUSTOM_ERROR_HANDLER_URL)
                 .onError(rc -> {
                     rc.response()
-                        .setStatusCode(503)
-                        .end(GENERIC_ERROR_MSG);
+                            .setStatusCode(503)
+                            .end(GENERIC_ERROR_MSG);
                 })
-                .handler(failIfToldSo);
+                .boolParam("fail").orFail(400)
+                .fold(failIfToldSo);
         router.get(WITH_HTTP_ERROR_NO_MARSHALLER)
                 .intParam("lala").orFail(notFound())
-                .handler(rc -> rc.response().end("ok"));
+                .fold((lala, rc) -> rc.response().end("ok"));
         router.get(WITH_HTTP_ERROR_MARSHALLER)
                 .marshaller("text/plain", BodyConverter.PLAIN)
                 .intParam("lala").orFail(notFound())
-                .handler(rc -> rc.response().end("ok"));
+                .fold((lala, rc) -> rc.response().end("ok"));
         return router;
     }
 
