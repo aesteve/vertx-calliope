@@ -1,3 +1,6 @@
+[![Travis](https://img.shields.io/travis/aesteve/vertx-calliope.svg)](https://travis-ci.org/aesteve/vertx-calliope)
+[![Codecov](https://img.shields.io/codecov/c/github/aesteve/vertx-calliope.svg)](https://codecov.io/gh/aesteve/vertx-calliope)
+
 ## Vert.x Calliope
 
 Just an experiment, to test different approaches to bring more expressiveness to vertx-web route declaration.
