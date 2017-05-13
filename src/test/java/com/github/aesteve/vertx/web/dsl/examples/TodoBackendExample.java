@@ -33,7 +33,7 @@ public class TodoBackendExample {
             return Future.succeededFuture(todos.values());
         }
 
-        AsyncResult<Todo> todoExists(int id) {
+        AsyncResult<Todo> todoExists(Integer id) {
             return get(id) == null ?
                     Future.failedFuture("Not found") :
                     Future.succeededFuture(get(id));
@@ -73,9 +73,6 @@ public class TodoBackendExample {
 
     public static void main(String... args) {
         AsyncTodoService todos = new AsyncTodoService();
-        Function<Integer, AsyncResult<Todo>> todoExists = todos::todoExists;
-        Function<String, Integer> idIsAnInt = Integer::parseInt;
-        Function<String, AsyncResult<Todo>> validId = idIsAnInt.andThen(todoExists);
         HttpError invalidTodoId = badRequest("Todo identifier is not an integer");
         Function<String, HttpError> todoNotFound = id -> notFound("Todo " + id + " not found");
 
@@ -98,20 +95,19 @@ public class TodoBackendExample {
                 .intParam("id")
                 .orFail(invalidTodoId)
                 .send(rc -> todos.findById(rc.get("id")));
-/* FIXME !!!
+
         router.put("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
-                .checkParam("id", validId).orFail(todoNotFound)
+                .check(todos::todoExists).orFail(todoNotFound)
                 .withBody(Todo.class)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
                 .send();
 
         router.delete("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
-                .checkParam("id", validId).orFail(todoNotFound)
+                .check(todos::todoExists).orFail(todoNotFound)
                 .send(rc -> todos.remove(rc.get("id")));
 
-*/
     }
 
     // Other stuff

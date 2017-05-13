@@ -12,10 +12,10 @@ import org.junit.Test;
 
 public class WithBodyTest extends TestBase {
 
-    private final static String WITH_BODY_URL = "/tests/body";
-    private final static String WITH_BODY_MAP_URL = "/tests/body/map";
-    private final static String WITH_BODY_MAP_SEND_URL = "/tests/body/map/send";
-    private final static String WITH_BODY_CUSTOM_STATUS = "/tests/body/map/custom";
+    private final static String WITH_BODY_URL = "/tests/payload";
+    private final static String WITH_BODY_MAP_URL = "/tests/payload/map";
+    private final static String WITH_BODY_MAP_SEND_URL = "/tests/payload/map/send";
+    private final static String WITH_BODY_CUSTOM_STATUS = "/tests/payload/map/custom";
 
     @Override
     protected WebRouter createRouter(Vertx vertx) {

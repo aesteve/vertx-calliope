@@ -15,6 +15,10 @@ public interface AsyncUtils {
         return Future.succeededFuture(value);
     }
 
+    static <A> Function<A, AsyncResult<A>> asyncBool(Function<A, Boolean> func) {
+        return a -> func.apply(a) ? yield(a) : fail(null);
+    }
+
     static <A, B> Function<A, AsyncResult<B>> async(Function<A, B> func) {
         return a -> {
             try {

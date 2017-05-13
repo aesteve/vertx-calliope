@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public interface WebRouteWithPayload<T> extends ResponseWritable {
+public interface WebRouteWithPayload<T> extends Checkable<T>, HasBody, ResponseWritable {
 
     <R> WebRouteWithPayload<R> map(BiFunction<T, RoutingContext, R> mapper);
     default <R> WebRouteWithPayload<R> map(Function<T, R> mapper) {

@@ -84,7 +84,7 @@ public class WebRouteImpl implements WebRoute {
 
     @Override
     public <T> WebRouteWithPayload<T> perform(Function<RoutingContext, T> handler) {
-        return new WebRouteWithPayloadImpl<>(this, handler);
+        return new WebRouteWithPayloadImpl<>(this, handler, rc -> "Action performed"); // FIXME : this isn't good design... Make the distinction between payload that come from the request, and payload created by the user
     }
 
     @Override

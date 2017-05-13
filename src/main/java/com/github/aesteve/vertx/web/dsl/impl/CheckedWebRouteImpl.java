@@ -1,11 +1,8 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.CheckedWebRoute;
-import com.github.aesteve.vertx.web.dsl.WebRoute;
 import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import com.github.aesteve.vertx.web.dsl.errors.HttpError;
-import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
-import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
 import com.github.aesteve.vertx.web.dsl.io.WebMarshaller;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -22,6 +19,14 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
     private final Function<RoutingContext, String> getParamValue;
     private final Function<RoutingContext, AsyncResult<T>> checkParamValue;
     private T defaultValue;
+
+    CheckedWebRouteImpl(WebRouteImpl parent, String ctxName, Function<RoutingContext, String> getParamValue, Function<RoutingContext, AsyncResult<T>> checker) {
+        this.parent = parent;
+        this.ctxName = ctxName;
+        this.getParamValue = getParamValue;
+        this.checkParamValue = checker;
+
+    }
 
     CheckedWebRouteImpl(WebRouteImpl parent, BiFunction<HttpServerRequest, String, String> extract, Function<String, AsyncResult<T>> checker, String paramName, String ctxName) {
         this.parent = parent;
@@ -41,7 +46,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             rc.put(ctxName, checked.result());
             rc.next();
         });
-        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
+        return new WebRouteWithPayloadImpl<>(parent, ctxName);
     }
 
     @Override
@@ -60,7 +65,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
                 rc.response().setStatusCode(error.status).end();
             }
         });
-        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
+        return new WebRouteWithPayloadImpl<>(parent, ctxName);
     }
 
     @Override
@@ -74,7 +79,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             rc.put(ctxName, checked.result());
             rc.next();
         });
-        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
+        return new WebRouteWithPayloadImpl<>(parent, ctxName);
     }
 
     @Override
@@ -88,7 +93,7 @@ public class CheckedWebRouteImpl<T> implements CheckedWebRoute<T> {
             }
             rc.next();
         });
-        return new WebRouteWithPayloadImpl<T>(parent, ctxName);
+        return new WebRouteWithPayloadImpl<>(parent, ctxName);
     }
 
 }
