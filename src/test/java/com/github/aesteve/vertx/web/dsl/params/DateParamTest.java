@@ -20,7 +20,7 @@ public class DateParamTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.get(DATE_PARAM_URL)
                 .dateParam("date", EXPECTED_FMT).orFail(400)
-                .fold((date, rc) -> {
+                .foldWithContext((date, rc) -> {
                     rc.response().end(String.valueOf(date.getTime()));
                 });
         return router;

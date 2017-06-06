@@ -28,7 +28,7 @@ public class CheckIntParam extends TestBase {
                 .intParam(INT_PARAM_NAME).orFail(400)
                 .check(lowerThan10)
                 .orFail(402)
-                .fold((i, rc) -> rc.response().end(i.toString()));
+                .foldWithContext((i, rc) -> rc.response().end(i.toString()));
         return router;
     }
 

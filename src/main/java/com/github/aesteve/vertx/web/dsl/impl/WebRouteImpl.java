@@ -19,9 +19,11 @@ import io.vertx.ext.web.handler.ErrorHandler;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+import static java.util.stream.Collectors.toList;
 
 
 public class WebRouteImpl implements WebRoute {
@@ -100,32 +102,31 @@ public class WebRouteImpl implements WebRoute {
     }
 
     @Override
-    public <T> void send(PayloadSupplier<T> supplier, int statusCode) {
+    public void send(ResponseBuilder<Void> builder) {
         handler(rc -> {
-            withMarshaller(rc, m -> {
-                rc.response().setStatusCode(statusCode);
-                marshall(m, rc, supplier.getPayload(rc));
-            });
+            builder.accept(rc);
         });
     }
 
-    private <T> void marshall(WebMarshaller m, RoutingContext rc, T result) {
-        if (result == null) {
-            rc.response().setStatusCode(404).end();
-            return;
-        }
-        if (result instanceof Optional) {
-            final Optional res = (Optional)result;
-            if (res.isPresent()) {
-                m.toResponseBody(rc, res.get());
-            } else {
+    protected <T> void marshall(RoutingContext rc, T result) {
+        withMarshaller(rc, m -> {
+            if (result == null) {
                 rc.response().setStatusCode(404).end();
+                return;
             }
-        } else if (result instanceof Future) {
-            m.toResponseBodyAsync(rc, (Future<?>)result);
-        } else {
-            m.toResponseBody(rc, result);
-        }
+            if (result instanceof Optional) {
+                final Optional res = (Optional)result;
+                if (res.isPresent()) {
+                    m.toResponseBody(rc, res.get());
+                } else {
+                    rc.response().setStatusCode(404).end();
+                }
+            } else if (result instanceof Future) {
+                m.toResponseBodyAsync(rc, (Future<?>)result);
+            } else {
+                m.toResponseBody(rc, result);
+            }
+        });
     }
 
     // Attach every handler to the routes
@@ -140,18 +141,18 @@ public class WebRouteImpl implements WebRoute {
 
 
     // Creates all the routes
-    private Stream<Route> routes() {
-        Stream<Route> routes;
+    private List<Route> routes() {
+        List<Route> routes;
         if (methods.isEmpty()) {
-            routes = Stream.of(router.route(path));
+            routes = Collections.singletonList(router.route(path));
         } else {
-            routes = methods.stream().map(m -> router.route(m, path));
+            routes = methods.stream().map(m -> router.route(m, path)).collect(toList());
         }
         if (!consumed.isEmpty()) {
-            routes = routes.flatMap(r -> consumed.stream().map(r::consumes));
+            routes.forEach(r -> consumed.forEach(r::consumes));
         }
         if (!produced.isEmpty()) {
-            routes = routes.flatMap(r -> produced.stream().map(r::produces));
+            routes.forEach(r -> produced.forEach(r::produces));
         }
         return routes;
     }

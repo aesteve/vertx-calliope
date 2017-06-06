@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.web.dsl.impl;
 
 import com.github.aesteve.vertx.web.dsl.CheckedWebRoute;
+import com.github.aesteve.vertx.web.dsl.ResponseBuilder;
 import com.github.aesteve.vertx.web.dsl.WebRouteWithAsyncPayload;
 import com.github.aesteve.vertx.web.dsl.WebRouteWithPayload;
 import com.github.aesteve.vertx.web.dsl.io.PayloadSupplier;
@@ -44,15 +45,19 @@ public class WebRouteWithAsyncPayloadImpl<T> implements WebRouteWithAsyncPayload
     }
 
     @Override
-    public void fold(BiConsumer<T, RoutingContext> handler) {
+    public void fold(Function<T, ResponseBuilder> handler) {
         parent.handler(rc -> {
-            handler.accept(payload(rc), rc);
+            ResponseBuilder rb = handler.apply(payload(rc));
+            rb.accept(rc);
+            if (rb.shouldHaveBody) {
+                parent.marshall(rc, rb.body);
+            }
         });
     }
 
     @Override
-    public void send(int status) {
-        parent.send(this::payload, status);
+    public void send(ResponseBuilder<Void> handler) {
+        parent.send(handler);
     }
 
     protected T payload(RoutingContext rc) {

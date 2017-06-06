@@ -28,12 +28,12 @@ public class CheckHeaderTest extends TestingCheckBase {
         WebRouter router = WebRouter.router(vertx);
         router.get(CHECK_HEADER_URL)
                 .checkHeader(HEADER_NAME, "test", CHECK_HEADER).orFail(400)
-                .fold((test, rc) -> {
+                .foldWithContext((test, rc) -> {
                     rc.response().end(test);
                 });
         router.get(CHECK_HEADER_URL_NONAME)
                 .checkHeader(HEADER_NAME, CHECK_HEADER).orFail(400)
-                .fold((header, rc) -> {
+                .foldWithContext((header, rc) -> {
                     rc.response().end(header);
                 });
         return router;

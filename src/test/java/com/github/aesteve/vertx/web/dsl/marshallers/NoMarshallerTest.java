@@ -19,7 +19,8 @@ public class NoMarshallerTest extends TestBase {
         router.get(NO_MARSHALLER_URL)
                 .withErrorDetails(true)
                 .produces("text/plain")
-                .send(rc -> new MockObject());
+                .lift(rc -> new MockObject())
+                .fold();
         return router;
     }
 

@@ -1,11 +1,13 @@
 package com.github.aesteve.vertx.web.dsl.examples;
 
+import com.github.aesteve.vertx.web.dsl.ResponseBuilder;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.errors.HttpError;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerResponse;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static com.github.aesteve.vertx.web.dsl.ResponseBuilder.created;
+import static com.github.aesteve.vertx.web.dsl.ResponseBuilder.noContent;
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.badRequest;
 import static com.github.aesteve.vertx.web.dsl.errors.HttpError.notFound;
 import static com.github.aesteve.vertx.web.dsl.utils.AsyncUtils.asyncBool;
@@ -84,20 +88,21 @@ public class TodoBackendExample {
 
         router.delete("/api/todos")
                 .lift(rc -> todos.clear())
-                .send(204);
+                .fold(rc -> noContent());
 
         router.get("/api/todos")
-                .send(rc -> todos.findAll());
+                .lift(rc -> todos.findAll())
+                .fold();
 
         router.post("/api/todos")
                 .withBody(Todo.class)
                 .map(todos::create)
-                .send(201);
+                .fold(t -> created("/api/todos/" + t.result(), t));
 
         router.get("/api/todos/:id")
                 .intParam("id")
                 .orFail(invalidTodoId)
-                .fold((id, rc) -> todos.findById(id));
+                .foldWithContext((id, rc) -> todos.findById(id));
 
         router.put("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
@@ -105,12 +110,12 @@ public class TodoBackendExample {
                 .withBody(Todo.class)
                 .check(bodyIsValid).orFail(cantReadTodo)
                 .map((todo, rc) -> todos.update(rc.get("id"), todo))
-                .send();
+                .fold();
 
         router.delete("/api/todos/:id")
                 .intParam("id").orFail(invalidTodoId)
                 .check(todos::todoExists).orFail(todoNotFound)
-                .fold((t, rc) -> todos.remove(rc.get("id")));
+                .foldWithContext((t, rc) -> todos.remove(rc.get("id")));
 
     }
 

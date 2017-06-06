@@ -49,11 +49,12 @@ public class FailingMarshallerTest extends TestBase {
                 .withErrorDetails(true)
                 .consumes("text/plain", failingMarshaller)
                 .withBody(MockObject.class)
-                .send();
+                .fold();
         router.get(FAILING_MARSHALLER_WRITE_URL)
                 .withErrorDetails(true)
                 .produces("text/plain", failingMarshaller)
-                .send(rc -> new MockObject());
+                .lift(rc -> new MockObject())
+                .fold();
         return router;
     }
 

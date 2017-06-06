@@ -3,7 +3,6 @@ package com.github.aesteve.vertx.web.dsl.errors;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxException;
 import io.vertx.ext.unit.Async;
@@ -42,11 +41,11 @@ public class ErrorsPlainTest extends TestBase {
         router.withErrorDetails(true);
         router.get(WITH_STACKTRACE_URL)
                 .boolParam("fail").orFail(400)
-                .fold(failIfToldSo);
+                .foldWithContext(failIfToldSo);
         router.get(WITHOUT_STACKTRACE_URL)
                 .withErrorDetails(false) // can be overriden
                 .boolParam("fail").orFail(400)
-                .fold(failIfToldSo);
+                .foldWithContext(failIfToldSo);
         router.get(CUSTOM_ERROR_HANDLER_URL)
                 .onError(rc -> {
                     rc.response()
@@ -54,14 +53,14 @@ public class ErrorsPlainTest extends TestBase {
                             .end(GENERIC_ERROR_MSG);
                 })
                 .boolParam("fail").orFail(400)
-                .fold(failIfToldSo);
+                .foldWithContext(failIfToldSo);
         router.get(WITH_HTTP_ERROR_NO_MARSHALLER)
                 .intParam("lala").orFail(notFound())
-                .fold((lala, rc) -> rc.response().end("ok"));
+                .foldWithContext((lala, rc) -> rc.response().end("ok"));
         router.get(WITH_HTTP_ERROR_MARSHALLER)
                 .marshaller("text/plain", BodyConverter.PLAIN)
                 .intParam("lala").orFail(notFound())
-                .fold((lala, rc) -> rc.response().end("ok"));
+                .foldWithContext((lala, rc) -> rc.response().end("ok"));
         return router;
     }
 

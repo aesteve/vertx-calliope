@@ -22,7 +22,7 @@ public class ConsumesTest extends TestBase {
                 .consumes("text/plain", PLAIN)
                 .withErrorDetails(true)
                 .withBody(String.class)
-                .send();
+                .fold();
         return router;
     }
 

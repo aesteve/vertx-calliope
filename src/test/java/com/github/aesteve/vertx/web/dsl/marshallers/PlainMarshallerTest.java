@@ -7,6 +7,7 @@ import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -27,18 +28,22 @@ public class PlainMarshallerTest extends TestBase {
         final WebRouter router = WebRouter.router(vertx);
         router.converter("text/plain", PLAIN)
                 .get(PLAIN_TXT_URL)
-                .send(rc -> "hello !");
+                .lift(rc -> "hello !")
+                .fold();
         router.get(PLAIN_TXT_URL_WITH_STATUS)
-                .send(rc -> "hello !", 418);
+                .lift(rc -> "hello !")
+                .fold(418);
         router.get(PLAIN_TXT_URL_NULL)
-                .send(rc -> null);
+                .lift(rc -> null)
+                .fold();
         router.get(PLAIN_TXT_URL_OPTIONAL)
-                .send(rc ->
+                .lift(rc ->
                         Optional.ofNullable(rc.request().getParam("optional"))
-                );
+                ).fold();
         router.get(PLAIN_TXT_URL_FAILED)
                 .withErrorDetails(true)
-                .send(rc -> fail(new VertxException("Sorry")));
+                .liftAsync(rc -> fail(new VertxException("Sorry")))
+                .fold();
         return router;
     }
 

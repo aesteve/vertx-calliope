@@ -7,7 +7,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class NoUnmarshallerTest extends TestBase {
@@ -21,7 +20,7 @@ public class NoUnmarshallerTest extends TestBase {
                 .withErrorDetails(true)
                 .consumes("text/plain")
                 .withBody(MockObject.class)
-                .fold((body, rc) -> rc.response().end());
+                .foldWithContext((body, rc) -> rc.response().end());
         return router;
     }
 

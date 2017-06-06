@@ -34,12 +34,12 @@ public class FailingJacksonMarshallerTest extends TestBase {
                 .withErrorDetails(true)
                 .consumes(jsonMime, JSON)
                 .withBody(MockObject.class)
-                .send();
+                .fold();
         router.get(FAILING_JACKSON_WRITE_URL)
                 .withErrorDetails(true)
                 .produces(jsonMime, JSON)
                 .lift(rc -> new MockFailingObject())
-                .send();
+                .fold();
         return router;
     }
 

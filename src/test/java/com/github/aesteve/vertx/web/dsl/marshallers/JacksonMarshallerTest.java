@@ -20,42 +20,34 @@ public class JacksonMarshallerTest extends TestBase {
     private final static String ASYNC_JSON_PATH = "/tests/marshallers/json/async";
     private final static String ASYNC_JSON_PATH_FAILURE = "/tests/marshallers/json/async/failed";
 
+    private final static MockObject MOCK_1 = new MockObject();
+    private final static MockObject MOCK_2 = new MockObject();
+
     @Override
     protected WebRouter createRouter(Vertx vertx) {
         final WebRouter router = WebRouter.router(vertx);
         router.converter("application/json", BodyConverter.JSON);
         router.withErrorDetails(true);
         router.get(JSON_PATH)
-                .send(rc -> new MockObject());
+                .lift(rc -> MOCK_1)
+                .fold();
         router.get(ASYNC_JSON_PATH)
-                .send(rc -> yield(new MockObject()));
+                .liftAsync(rc -> yield(MOCK_2))
+                .fold();
         router.get(ASYNC_JSON_PATH_FAILURE)
-                .send(rc -> fail(new VertxException("Sorry")));
+                .liftAsync(rc -> fail(new VertxException("Sorry")))
+                .fold();
         return router;
     }
 
     @Test
     public void mockObjectShouldBeMarshalled(TestContext ctx) {
-        testOkMockObject(ctx, JSON_PATH);
+        testJson(ctx, JSON_PATH, MOCK_1);
     }
 
     @Test
     public void futureMockObjectShouldBeMarshalled(TestContext ctx) {
-        testOkMockObject(ctx, ASYNC_JSON_PATH);
+        testJson(ctx, ASYNC_JSON_PATH, MOCK_2);
     }
 
-    private void testOkMockObject(TestContext ctx, String path) {
-        final Async async = ctx.async();
-        client().getNow(path, resp -> {
-            ctx.assertEquals(200, resp.statusCode());
-            resp.bodyHandler(buff -> {
-                try {
-                    ctx.assertEquals(buff.toString(), Json.mapper.writeValueAsString(new MockObject()));
-                } catch (JsonProcessingException e) {
-                    ctx.fail(e);
-                }
-                async.complete();
-            });
-        });
-    }
 }

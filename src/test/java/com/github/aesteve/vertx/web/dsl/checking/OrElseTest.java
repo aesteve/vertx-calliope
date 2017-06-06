@@ -17,7 +17,7 @@ public class OrElseTest extends TestBase {
         router.get(OR_ELSE_URL)
                 .intParam("age")
                 .orElse(42)
-                .fold((age, rc) -> rc.response().end(age.toString()));
+                .foldWithContext((age, rc) -> rc.response().end(age.toString()));
         return router;
     }
 

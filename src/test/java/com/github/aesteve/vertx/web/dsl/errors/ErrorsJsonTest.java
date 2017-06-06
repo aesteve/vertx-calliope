@@ -26,10 +26,10 @@ public class ErrorsJsonTest extends TestBase {
         router.marshaller("application/json", JSON);
         router.get(JSON_ERROR_MESSAGE_URL)
                 .intParam("present").orFail(badRequest(DOESNT_EXIST))
-                .fold((present, rc) -> rc.response().end("ok"));
+                .foldWithContext((present, rc) -> rc.response().end("ok"));
         router.get(JSON_ERROR_NOMESSAGE_URL)
                 .intParam("present").orFail(BAD_REQUEST)
-                .fold((present, rc) -> rc.response().end("ok"));
+                .foldWithContext((present, rc) -> rc.response().end("ok"));
         return router;
     }
 

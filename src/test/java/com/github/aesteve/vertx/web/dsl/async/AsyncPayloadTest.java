@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.web.dsl.async;
 
+import com.github.aesteve.vertx.web.dsl.ResponseBuilder;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import io.vertx.core.Future;
@@ -28,25 +29,25 @@ public class AsyncPayloadTest extends TestBase {
         WebRouter router = WebRouter.router(vertx);
         router.get(LIFT_ASYNC_URL)
                 .liftAsync(rc -> Future.succeededFuture(PAYLOAD_1))
-                .fold((s, rc) -> rc.response().end(s));
+                .fold();
         router.get(LIFT_ASYNC_SEND_URL)
                 .marshaller("text/plain", PLAIN)
                 .liftAsync(rc -> Future.succeededFuture(PAYLOAD_2))
-                .send();
+                .fold();
         router.get(LIFT_ASYNC_MAPPED_URL)
                 .liftAsync(rc -> Future.succeededFuture(new MockObject()))
                 .flatMap(MockObject::getString)
-                .fold((s, rc) -> rc.response().end(s));
+                .foldWithContext((s, rc) -> rc.response().end(s));
         router.get(LIFT_ASYNC_FAILED_URL)
                 .marshaller("text/plain", PLAIN)
                 .withErrorDetails(true)
                 .liftAsync(rc -> Future.failedFuture(new VertxException("Failed!!!")))
-                .fold((s, rc) -> rc.response().end());
+                .fold();
         router.get(LIFT_ASYNC_CHECK_URL)
                 .marshaller("text/plain", PLAIN)
                 .liftAsync(rc -> Future.succeededFuture(rc.request().getParam("test")))
                 .check(asyncBool(s -> s.length() < 3)).orFail(402)
-                .fold((s, rc) -> rc.response().end("ok"));
+                .foldWithResponse((s, resp) -> resp.end("ok"));
         return router;
     }
 

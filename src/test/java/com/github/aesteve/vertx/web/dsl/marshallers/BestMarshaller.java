@@ -1,10 +1,8 @@
 package com.github.aesteve.vertx.web.dsl.marshallers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.Json;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
@@ -26,24 +24,14 @@ public class BestMarshaller extends TestBase {
         router.get(BEST_MARSHALLER_URL)
                 .produces("application/json")
                 .produces("text/plain")
-                .send(rc -> mock);
+                .lift(rc -> mock)
+                .fold();
         return router;
     }
 
     @Test
-    public void testJson(TestContext ctx) {
-        Async async = ctx.async();
-        client().get(BEST_MARSHALLER_URL, resp -> {
-            ctx.assertEquals(200, resp.statusCode());
-            resp.bodyHandler(buffer -> {
-                try {
-                    ctx.assertEquals(Json.mapper.writeValueAsString(mock), buffer.toString());
-                    async.complete();
-                } catch (JsonProcessingException e) {
-                    ctx.fail(e);
-                }
-            });
-        }).putHeader(ACCEPT, "application/json").end();
+    public void testJsonIsOk(TestContext ctx) {
+        testJson(ctx, BEST_MARSHALLER_URL, mock);
     }
 
     @Test

@@ -21,7 +21,7 @@ public class UnmarshallerTest extends TestBase {
         router.withErrorDetails(true);
         router.get(UNMARSHALLER_URL)
                 .withBody(String.class)
-                .fold((sent, rc) -> {
+                .foldWithContext((sent, rc) -> {
                     rc.response().end(rc.getBodyAsString());
                 }); // echo back
         return router;

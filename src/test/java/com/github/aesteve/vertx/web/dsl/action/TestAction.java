@@ -24,7 +24,7 @@ public class TestAction extends TestBase {
 
         router.get(ACTION_URL)
                 .lift(rc -> PAYLOAD)
-                .send();
+                .fold();
 
         return router;
     }

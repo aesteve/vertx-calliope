@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.web.dsl;
 
 import com.github.aesteve.vertx.web.dsl.errors.HttpError;
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.text.SimpleDateFormat;
@@ -14,32 +15,50 @@ import static com.github.aesteve.vertx.web.dsl.impl.WebRouteWithPayloadImpl.BODY
 import static io.netty.handler.codec.http.HttpHeaderNames.VARY;
 import static io.vertx.core.http.HttpHeaders.*;
 
-public final class ResponseBuilder<T> implements Handler<RoutingContext> {
+public final class ResponseBuilder<T> {
 
     private final Handler<RoutingContext> handler;
     private final static SimpleDateFormat headerDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
+    public final T body;
+    public final boolean shouldHaveBody;
+
     private ResponseBuilder(Handler<RoutingContext> handler) {
         this.handler = handler;
+        body = null;
+        shouldHaveBody = false;
     }
 
-    private ResponseBuilder(int status, T payload) {
+    private ResponseBuilder(Handler<RoutingContext> h, T payload) {
+        this.handler = rc -> {
+            h.handle(rc);
+            rc.put(BODY_ID, payload);
+        };
+        body = payload;
+        shouldHaveBody = true;
+    }
+
+    ResponseBuilder(int status, T payload) {
+        body = payload;
+        shouldHaveBody = true;
         handler = rc -> {
             rc.response().setStatusCode(status);
             rc.put(BODY_ID, payload);
-            rc.next();
         };
     }
 
     private ResponseBuilder(HttpError error) {
         handler = rc -> {
             rc.put(BODY_ID, error);
-            rc.next();
         };
+        body = null;
+        shouldHaveBody = false;
     }
 
-    private ResponseBuilder(int status) {
+    ResponseBuilder(int status) {
         handler = rc -> rc.response().setStatusCode(status).end();
+        body = null;
+        shouldHaveBody = false;
     }
 
 
@@ -48,11 +67,22 @@ public final class ResponseBuilder<T> implements Handler<RoutingContext> {
                 .setStatusCode(status)
                 .putHeader(headerName, headerValue)
                 .end();
+        body = null;
+        shouldHaveBody = false;
     }
 
-    @Override
-    public void handle(RoutingContext context) {
-        handler.handle(context);
+    private ResponseBuilder(int status, CharSequence headerName, String headerValue, T payload) {
+        handler = rc -> {
+            rc.response()
+                    .setStatusCode(status)
+                    .putHeader(headerName, headerValue);
+        };
+        body = payload;
+        shouldHaveBody = true;
+    }
+
+    public void accept(RoutingContext rc) {
+        handler.handle(rc);
     }
 
     /** 10x */
@@ -61,51 +91,54 @@ public final class ResponseBuilder<T> implements Handler<RoutingContext> {
 
     /** 20x */
     /* 200 */
-    public static Handler<RoutingContext> OK = ok();
-    public static Handler<RoutingContext> ok() {
+    public static ResponseBuilder<Void> OK = ok();
+    public static ResponseBuilder<Void> ok() {
         return new ResponseBuilder<>(200);
     }
-    public static <T> Handler<RoutingContext> ok(T body) {
+    public static <T> ResponseBuilder<T> ok(T body) {
         return new ResponseBuilder<>(200, body);
     }
     /* 201 */
-    public static Handler<RoutingContext> CREATED = created();
-    public static Handler<RoutingContext> created() {
+    public static ResponseBuilder<Void> CREATED = created();
+    public static ResponseBuilder<Void> created() {
         return new ResponseBuilder<>(201);
     }
-    public static Handler<RoutingContext> created(String location) {
+    public static ResponseBuilder<Void> created(String location) {
         return new ResponseBuilder<>(201, LOCATION, location);
     }
+    public static <T> ResponseBuilder<T> created(String location, T payload) {
+        return new ResponseBuilder<>(201, LOCATION, location, payload);
+    }
     /* 202 */
-    public static Handler<RoutingContext> ACCEPTED = accepted();
-    public static Handler<RoutingContext> accepted() {
+    public static ResponseBuilder<Void> ACCEPTED = accepted();
+    public static ResponseBuilder<Void> accepted() {
         return new ResponseBuilder<>(202);
     }
     public static <T> ResponseBuilder<T> accepted(T payload) {
         return new ResponseBuilder<>(202, payload);
     }
     /* 203 */
-    public static Handler<RoutingContext> NON_AUTHORITATIVE_INFORMATION = nonAuthoritativeInformation();
-    public static Handler<RoutingContext> nonAuthoritativeInformation() {
+    public static ResponseBuilder<Void> NON_AUTHORITATIVE_INFORMATION = nonAuthoritativeInformation();
+    public static ResponseBuilder<Void> nonAuthoritativeInformation() {
         return new ResponseBuilder<>(203);
     }
     public static <T> ResponseBuilder<T> nonAuthoritativeInformation(T payload) {
         return new ResponseBuilder<>(203, payload);
     }
     /* 204 */
-    public static Handler<RoutingContext> NO_CONTENT = noContent();
-    public static Handler<RoutingContext> noContent() {
+    public static ResponseBuilder<Void> NO_CONTENT = noContent();
+    public static ResponseBuilder<Void> noContent() {
         return new ResponseBuilder<>(204);
     }
-    public static Handler<RoutingContext> noContent(Map<String, String> additionalHeaders) { /* README ? is this a good idea ? */
+    public static ResponseBuilder<Void> noContent(Map<String, String> additionalHeaders) { /* README ? is this a good idea ? */
         return new ResponseBuilder<>(rc -> {
             rc.response().headers().addAll(additionalHeaders);
             rc.response().setStatusCode(204).end();
         });
     }
     /* 205 */
-    public static Handler<RoutingContext> RESET_CONTENT = resetContent();
-    public static Handler<RoutingContext> resetContent() {
+    public static ResponseBuilder<Void> RESET_CONTENT = resetContent();
+    public static ResponseBuilder<Void> resetContent() {
         return new ResponseBuilder<>(205);
     }
     /* 206 */
@@ -139,7 +172,7 @@ public final class ResponseBuilder<T> implements Handler<RoutingContext> {
             headers.put(VARY.toString(), vary);
             return this;
         }
-        public Handler<RoutingContext> build() {
+        public <T> ResponseBuilder<T> build(T payload) {
             return new ResponseBuilder<>(rc -> {
                 rc.response().headers().addAll(headers);
                 rc.response().setStatusCode(status).end();
@@ -153,53 +186,53 @@ public final class ResponseBuilder<T> implements Handler<RoutingContext> {
 
     /** 30x */
     /* 300 */
-    public static Handler<RoutingContext> MULTIPLE_CHOICES = multipleChoices();
-    public static Handler<RoutingContext> multipleChoices() {
+    public static ResponseBuilder<Void> MULTIPLE_CHOICES = multipleChoices();
+    public static ResponseBuilder<Void> multipleChoices() {
         return new ResponseBuilder<>(300);
     }
-    public static <T> ResponseBuilder<T> multipleChoices(T payload) {
-        return new ResponseBuilder<>(300, payload);
-    }
-    public static Handler<RoutingContext> multipleChoices(String location) {
+    public static ResponseBuilder<Void> multipleChoices(String location) {
         return new ResponseBuilder<>(300, LOCATION, location);
     }
     /* 301 */
-    public static Handler<RoutingContext> MOVED_PERMANENTLY = movedPermanently();
-    public static Handler<RoutingContext> movedPermanently() {
+    public static ResponseBuilder<Void> MOVED_PERMANENTLY = movedPermanently();
+    public static ResponseBuilder<Void> movedPermanently() {
         return new ResponseBuilder<>(301);
     }
-    public static Handler<RoutingContext> movedPermanently(String location) {
+    public static ResponseBuilder<Void> movedPermanently(String location) {
         return new ResponseBuilder<>(301, LOCATION, location);
     }
-    public static Handler<RoutingContext> movedPermanently(Function<RoutingContext, String> locationBuilder) {
+    public static ResponseBuilder<Void> movedPermanently(Function<RoutingContext, String> locationBuilder) {
         return new ResponseBuilder<>(rc -> {
             rc.response().putHeader(LOCATION, locationBuilder.apply(rc));
             rc.response().setStatusCode(301).end();
         });
     }
     /* 302 */
-    public static Handler<RoutingContext> FOUND = found();
-    public static Handler<RoutingContext> found() {
+    public static ResponseBuilder<Void> FOUND = found();
+    public static ResponseBuilder<Void> found() {
         return new ResponseBuilder<>(302);
     }
-    public static Handler<RoutingContext> found(String location) {
+    public static ResponseBuilder<Void> found(String location) {
         return new ResponseBuilder<>(302, LOCATION, location);
     }
-    public static Handler<RoutingContext> found(Function<RoutingContext, String> locationBuilder) {
+    public static <T> ResponseBuilder<T> found(String location, T payload) {
+        return new ResponseBuilder<>(302, LOCATION, location, payload);
+    }
+    public static ResponseBuilder<Void> found(Function<RoutingContext, String> locationBuilder) {
         return new ResponseBuilder<>(rc -> {
             rc.response().putHeader(LOCATION, locationBuilder.apply(rc));
             rc.response().setStatusCode(302).end();
         });
     }
     /* 303 */
-    public static Handler<RoutingContext> SEE_OTHER = seeOther();
-    public static Handler<RoutingContext> seeOther() {
+    public static ResponseBuilder<Void> SEE_OTHER = seeOther();
+    public static ResponseBuilder<Void> seeOther() {
         return new ResponseBuilder<>(303);
     }
-    public static Handler<RoutingContext> seeOther(String location) {
+    public static ResponseBuilder<Void> seeOther(String location) {
         return new ResponseBuilder<>(303, LOCATION, location);
     }
-    public static Handler<RoutingContext> seeOther(Function<RoutingContext, String> locationBuilder) {
+    public static ResponseBuilder<Void> seeOther(Function<RoutingContext, String> locationBuilder) {
         return new ResponseBuilder<>(rc -> {
             rc.response().putHeader(LOCATION, locationBuilder.apply(rc));
             rc.response().setStatusCode(303).end();
@@ -210,19 +243,19 @@ public final class ResponseBuilder<T> implements Handler<RoutingContext> {
     public static CacheHeaderBuilder notModified() {
         return new CacheHeaderBuilder(304);
     }
-    public static Handler<RoutingContext> notModified(Date date) {
+    public static ResponseBuilder<Void> notModified(Date date) {
         return new ResponseBuilder<>(304, DATE, headerDateFormat.format(date));
     }
     /* 305 */
-    public static Handler<RoutingContext> useProxy(String location) {
+    public static ResponseBuilder<Void> useProxy(String location) {
         return new ResponseBuilder<>(305, LOCATION, location);
     }
     /* 307 */
-    public static Handler<RoutingContext> TEMPORARY_REDIRECT = temporaryRedirect();
-    public static Handler<RoutingContext> temporaryRedirect() {
+    public static ResponseBuilder<Void> TEMPORARY_REDIRECT = temporaryRedirect();
+    public static ResponseBuilder<Void> temporaryRedirect() {
         return new ResponseBuilder<>(307);
     }
-    public static Handler<RoutingContext> temporaryRedirect(String location) {
+    public static ResponseBuilder<Void> temporaryRedirect(String location) {
         return new ResponseBuilder<>(307, LOCATION, location);
     }
 

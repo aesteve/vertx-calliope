@@ -30,7 +30,7 @@ public class CheckingParamTest extends TestBase {
                 .checkParam("test1", correctParameter)
                 .orFail(notFound("Param test1 not found"))
                 .map(test1 -> "ok")
-                .send();
+                .fold();
         return router;
     }
 

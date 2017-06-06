@@ -22,7 +22,7 @@ public class CompositionTest extends TestBase {
                 .produces("text/plain", PLAIN)
                 .lift(rc -> PAYLOAD)
                 .map(MockObject::getI)
-                .send();
+                .fold();
         return router;
     }
 

@@ -28,13 +28,13 @@ public class PureCheckTest extends TestingCheckBase {
         router.withErrorDetails(true);
         router.get(CHECK_URL)
                 .check(HEADER_NAME, "test", HttpServerRequest::getHeader, CHECK_HEADER).orFail(400)
-                .fold((test, rc) -> {
+                .foldWithContext((test, rc) -> {
                     rc.response().end(rc.<String>get("test"));
                 });
         router.get(CHECK_URL_CUSTOM)
                 .check(HEADER_NAME, HttpServerRequest::getHeader, CHECK_HEADER)
                 .orFail(501)
-                .fold((header, rc) -> rc.response().end(header));
+                .foldWithContext((header, rc) -> rc.response().end(header));
         return router;
     }
 

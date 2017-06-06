@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.web.dsl.body;
 
+import com.github.aesteve.vertx.web.dsl.ResponseBuilder;
 import com.github.aesteve.vertx.web.dsl.TestBase;
 import com.github.aesteve.vertx.web.dsl.WebRouter;
 import com.github.aesteve.vertx.web.dsl.io.BodyConverter;
@@ -9,6 +10,8 @@ import io.vertx.core.json.Json;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
+
+import static com.github.aesteve.vertx.web.dsl.ResponseBuilder.found;
 
 public class WithBodyTest extends TestBase {
 
@@ -23,19 +26,19 @@ public class WithBodyTest extends TestBase {
         router.converter("application/json", BodyConverter.JSON);
         router.post(WITH_BODY_URL)
                 .withBody(MockObject.class)
-                .send();
+                .fold(ResponseBuilder::ok);
         router.post(WITH_BODY_MAP_URL)
                 .withBody(MockObject.class)
                 .map(MockObject::getDate)
-                .send();
+                .fold(ResponseBuilder::ok);
         router.post(WITH_BODY_MAP_SEND_URL)
                 .withBody(MockObject.class)
                 .map(MockObject::getDate)
-                .send();
+                .fold(ResponseBuilder::ok);
         router.post(WITH_BODY_CUSTOM_STATUS)
                 .withBody(MockObject.class)
                 .map(MockObject::getDate)
-                .send(302);
+                .fold(date -> found("unused", date));
         return router;
     }
 

@@ -16,7 +16,7 @@ public class IntParamTest extends TestBase {
         final WebRouter router = WebRouter.router(vertx);
         router.get("/tests/int")
                 .intParam("test").orFail(BAD_REQUEST)
-                .fold((test, ctx) -> {
+                .foldWithContext((test, ctx) -> {
                     ctx.response().end("param = " + test);
                 });
         return router;

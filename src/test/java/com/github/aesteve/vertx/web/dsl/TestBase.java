@@ -1,9 +1,13 @@
 package com.github.aesteve.vertx.web.dsl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.Json;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
@@ -11,6 +15,10 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
 
 @RunWith(VertxUnitRunner.class)
 public abstract class TestBase {
@@ -62,6 +70,46 @@ public abstract class TestBase {
         public void setDate(Date date) { this.date = date; }
         public int getI() { return i; }
         public void setI(int i) { this.i = i; }
+    }
+
+    protected void testJson(TestContext ctx, String url, MockObject mock) {
+        testHttpStatusAndHeader(ctx, url, "application/json", 200, null, mock);
+    }
+
+    protected Map<CharSequence, String> expectHeader(CharSequence headerName, String headerValue) {
+        Map<CharSequence, String> map = new HashMap<>();
+        map.put(headerName, headerValue);
+        return map;
+    }
+
+    protected void testHttpStatusAndHeader(
+            TestContext ctx,
+            String url,
+            String contentType,
+            int status,
+            Map<CharSequence, String> expectedHeader,
+            MockObject body) {
+        Async async = ctx.async();
+        client().get(url, resp -> {
+            ctx.assertEquals(status, resp.statusCode());
+            if (expectedHeader != null) {
+                expectedHeader.forEach((k, v) -> {
+                    ctx.assertEquals(resp.getHeader(k), v);
+                });
+            }
+            if (body == null) {
+                async.complete();
+                return;
+            }
+            resp.bodyHandler(buffer -> {
+                try {
+                    ctx.assertEquals(Json.mapper.writeValueAsString(body), buffer.toString());
+                    async.complete();
+                } catch (JsonProcessingException e) {
+                    ctx.fail(e);
+                }
+            });
+        }).putHeader(ACCEPT, contentType).end();
     }
 
 }
