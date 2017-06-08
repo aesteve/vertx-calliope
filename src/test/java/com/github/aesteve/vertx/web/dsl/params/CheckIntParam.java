@@ -25,7 +25,7 @@ public class CheckIntParam extends TestBase {
     protected WebRouter createRouter(Vertx vertx) {
         WebRouter router = WebRouter.router(vertx);
         router.get(CHECK_MAP_INT_URL)
-                .intParam(INT_PARAM_NAME).orFail(400)
+                .withParam(INT_PARAM_NAME, Integer.class).orFail(400)
                 .check(lowerThan10)
                 .orFail(402)
                 .foldWithContext((i, rc) -> rc.response().end(i.toString()));
