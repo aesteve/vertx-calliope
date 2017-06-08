@@ -49,6 +49,23 @@ public interface ExtractAndCheckable {
         };
         return checkParam(name, parsing);
     }
+    @SuppressWarnings("unchecked")
+    default <T> CheckedWebRoute<T> withParam(String name, Class<T> clazz, String... formats) {
+        switch (clazz.getSimpleName()) {
+            case "Integer":
+                return (CheckedWebRoute<T>) intParam(name);
+            case "Boolean":
+                return (CheckedWebRoute<T>) boolParam(name);
+            case "Date":
+                String format = "yyyy-MM-dd";
+                if (formats.length == 1) {
+                    format = formats[0];
+                }
+                return (CheckedWebRoute<T>) dateParam(name, format);
+            default:
+                throw new RuntimeException("Other formats are not supported");
+        }
+    }
 
 
 
